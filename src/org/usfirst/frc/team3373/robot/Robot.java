@@ -47,8 +47,8 @@ public class Robot extends TimedRobot {
 	int BREncoderCalibMin = 300;
 	int BREncoderCalibMax = 300;
 	
-	double robotWidth = 21.125; //TODO change robot dimensions to match this years robot
-	double robotLength = 33.5;
+	double robotWidth = 22.75; //TODO change robot dimensions to match this years robot
+	double robotLength = 27.375;
 
 
 	int LBdriveChannel = 1;
@@ -80,9 +80,9 @@ public class Robot extends TimedRobot {
 	int RFEncMax = 895;
 	double RFWheelMod = .8922;
 	
-	int leftUltraSonicPort =1;
-	int rightUltraSonicPort = 2;
-	int backUltraSonicPort = 3;
+	int leftUltraSonicPort =0;
+	int rightUltraSonicPort = 1;
+	int backUltraSonicPort = 2;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
@@ -233,7 +233,7 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 		autoController = new AutonomousControl(positionalIndex, programIndex, swerve, lifter, grabber);
 		swerve.ahrs.reset();
-		swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(3));
+		swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(1));
 
 	}
 
@@ -261,8 +261,7 @@ public class Robot extends TimedRobot {
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
-		//swerve.autonomousDrive(180, 90, 1, 1, 1);
-		
+		//swerve.autonomousDrive(270, 90, 1, 1,1);
 		autoController.activateAuto();
 	}
 

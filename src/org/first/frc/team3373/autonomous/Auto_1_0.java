@@ -18,7 +18,7 @@ public class Auto_1_0 {
 			System.out.println("run");
 			if(isLeft){ //If scale is left
 				if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
-					swerve.autonomousDrive(270, 90,1,1,1);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
+					swerve.autonomousDrive(90, 90,1,1,1);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
 				}else{//  robot has hit the bump
 					swerve.calculateSwerveControl(0, 0, 0);
 					/*swerve.setSpinAngle(90); turn to the right
