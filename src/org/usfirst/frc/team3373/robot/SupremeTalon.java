@@ -1,26 +1,24 @@
 package org.usfirst.frc.team3373.robot;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.TalonControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-public class CANTalonSafetyNet {
+public class SupremeTalon {
 	boolean isFound = true;
-	CANTalon talon;
+    WPI_TalonSRX talon;
 	double maxDelta;
 	double currentSpeed;
 
-	public CANTalonSafetyNet(int port, double maxDel) {
+	public SupremeTalon(int port, double maxDel) {
 		try {
-			talon = new CANTalon(port);
+			talon = new WPI_TalonSRX(port);
 		} catch (Exception e) {
 			isFound = false;
 		}
 		maxDelta = maxDel;
 		currentSpeed = 0;
 	}
-
-	public int getAnalogInRaw() {
+	// This and other specific methods are no longer useful
+	/*public int getAnalogInRaw() {
 		if (isFound)
 			try {
 				return talon.getAnalogInRaw();
@@ -29,7 +27,7 @@ public class CANTalonSafetyNet {
 			}
 		else
 			return 42; // It is the answer
-	}
+	}*/
 
 	public double getOutputCurrent() {
 		if (isFound)
@@ -43,27 +41,27 @@ public class CANTalonSafetyNet {
 			talon.set(speed);
 	}
 
-	public void changeControlMode(TalonControlMode mode) {
+	/*public void changeControlMode(TalonControlMode mode) {
 		if (isFound)
 			talon.changeControlMode(mode);
-	}
+	}*/
 
 	public void disable() {
 		if (isFound)
 			talon.disable();
 	}
 
-	public void enable() {
+	/*public void enable() {
 		if (isFound)
 			talon.enable();
-	}
+	}*/
 
-	public void enableBrakeMode(boolean brake) {
+	/*public void enableBrakeMode(boolean brake) {
 		if (isFound)
 			talon.enableBrakeMode(brake);
-	}
+	}*/
 
-	public boolean isRevLimitSwitchClosed() {
+	/*public boolean isRevLimitSwitchClosed() {
 		if (isFound)
 			return talon.isRevLimitSwitchClosed();
 		else
@@ -75,18 +73,18 @@ public class CANTalonSafetyNet {
 			return talon.isFwdLimitSwitchClosed();
 		else
 			return false;
-	}
+	}*/
 
-	public void setPID(double p, double i, double d) {
+	/*public void setPID(double p, double i, double d) {
 		if (isFound)
 			talon.setPID(p, i, d);
 
-	}
+	}*/
 
-	public void setFeedbackDevice(FeedbackDevice device) {
+	/*public void setFeedbackDevice(FeedbackDevice device) {
 		if (isFound)
 			talon.setFeedbackDevice(device);
-	}
+	}*/
 
 	public double get() {
 		if (isFound)
@@ -95,17 +93,17 @@ public class CANTalonSafetyNet {
 			return 42;
 	}
 
-	public void enableLimitSwitch(boolean forward, boolean reverse) {
+	/*public void enableLimitSwitch(boolean forward, boolean reverse) {
 		if (isFound)
 			talon.enableLimitSwitch(forward, reverse);
-	}
+	}*/
 
-	public double getOutputVoltage() {
+	/*public double getOutputVoltage() {
 		if (isFound)
 			return talon.getOutputVoltage();
 		else
 			return 42;
-	}
+	}*/
 
 	public void accelerate(double speed) {
 		if (isFound) {
@@ -122,21 +120,21 @@ public class CANTalonSafetyNet {
 			this.set(speed);
 		}
 	}
-	public void setVoltageCompensationRampRate(double r8){ //r8 == rate
+	/*public void setVoltageCompensationRampRate(double r8){ //r8 == rate
 		if(isFound){
 			talon.setVoltageCompensationRampRate(r8);
 		}
-	}
-	public void setEncPosition(int position){
+	}*/
+	/*public void setEncPosition(int position){
 		if(isFound){
 			talon.setEncPosition(position);
 		}
-	}
-	public int getEncPosition(){
+	}*/
+	/*public int getEncPosition(){
 		if(isFound){
 		return talon.getEncPosition();
 		}else{
 			return 42;
 		}
-	}
+	}*/
 }
