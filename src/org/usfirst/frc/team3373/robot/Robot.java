@@ -38,6 +38,7 @@ public class Robot extends IterativeRobot {
 	int RX = 4;
 	int RY = 5;
 	
+	DualActuators actuators;
 	Actuator actuator1;
 	Actuator actuator2;
 	
@@ -51,7 +52,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		
+		actuators = new DualActuators(5,4,.05,960,965,100,101,29.2,29.3,1,.8);
 		actuator1= new Actuator(5,.05,960,100,29.2,1);
 		actuator2 = new Actuator(4,.05,965,101,29.3,0.8);
 		
@@ -111,9 +112,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
 		SmartDashboard.putNumber("Distance1", actuator1.getPosition());
 		SmartDashboard.putNumber("Distance2", actuator2.getPosition());
-		actuator1.set(shooter.getRawAxis(LY));
-		actuator2.set(shooter.getRawAxis(RY));
+		//actuator1.set(shooter.getRawAxis(LY));
+		//actuator2.set(shooter.getRawAxis(RY));
 		//sim.accelerate(-1,.05);
+		actuators.goToPosition(15);
 	}
 
 	/**

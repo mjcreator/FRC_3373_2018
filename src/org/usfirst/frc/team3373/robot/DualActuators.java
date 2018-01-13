@@ -12,7 +12,20 @@ public class DualActuators {
 		actuator2 = new Actuator(port2,maxDelta,maxPot2,minPot2,maxDistance2,minDistance2);
 	}
 	public void goToPosition(double position){
-		
+		double deltaPosition1 = position - actuator1.getPosition();
+		double deltaPosition2 = position -actuator2.getPosition();
+		double speed1 = .1*deltaPosition1;
+		double speed2 = .1*deltaPosition2;
+		if(speed1 > 1)
+			speed1= 1;
+		if(speed2 > 1)
+			speed2= 1;
+		if(speed1 < -1)
+			speed1= -1;
+		if(speed2<-1)
+			speed2= -1;
+		actuator1.accelerate(speed1,0.075);
+		actuator2.accelerate(speed2, 0.075);
 	}
 	public double getPosition(){
 		return actuator1.getPosition();
