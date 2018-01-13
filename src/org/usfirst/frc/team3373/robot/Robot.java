@@ -7,6 +7,12 @@
 
 package org.usfirst.frc.team3373.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.*;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.*;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,13 +29,33 @@ public class Robot extends IterativeRobot {
 	private static final String kCustomAuto = "My Auto";
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
-
+	
+	
+	int LX = 0;
+	int LY = 1;
+	int Ltrigger = 2;
+	int Rtrigger = 3;
+	int RX = 4;
+	int RY = 5;
+	
+	Actuator actuator1;
+	Actuator actuator2;
+	
+	SuperJoystick shooter;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
+		
+		actuator1= new Actuator(5,.05,960,100,29.2,1);
+		actuator2 = new Actuator(4,.05,965,101,29.3,0.8);
+		
+		shooter = new SuperJoystick(0);
+		
+		
 		m_chooser.addDefault("Default Auto", kDefaultAuto);
 		m_chooser.addObject("My Auto", kCustomAuto);
 		SmartDashboard.putData("Auto choices", m_chooser);
@@ -75,6 +101,14 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		System.out.println("Pot1"+ actuator1.getSelectedSensorPosition(0));
+		System.out.println("Pot2"+ actuator2.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Distance1", actuator1.getPosition());
+		SmartDashboard.putNumber("Distance2", actuator2.getPosition());
+		actuator1.set(shooter.getRawAxis(LY)*.4);
+		actuator2.set(shooter.getRawAxis(RY)*.4);
 	}
 
 	/**

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 /*
  *
  * @author Jamie Dyer
- * @author Drew Marino
+ * @author Drew Marino (not really)
  * 
  */
 public class SuperJoystick extends Joystick{

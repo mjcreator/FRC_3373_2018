@@ -1,6 +1,8 @@
 package org.usfirst.frc.team3373.robot;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.*;
 
 public class SupremeTalon {
 	boolean isFound = true;
@@ -13,6 +15,11 @@ public class SupremeTalon {
 			talon = new WPI_TalonSRX(port);
 		} catch (Exception e) {
 			isFound = false;
+		}
+		try{
+			talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 10);
+			talon.setSensorPhase(false);
+		}catch (Exception e){			
 		}
 		maxDelta = maxDel;
 		currentSpeed = 0;
@@ -119,6 +126,13 @@ public class SupremeTalon {
 			currentSpeed = speed;
 			this.set(speed);
 		}
+	}
+	public double getSelectedSensorPosition(int num){
+		if(isFound){
+			return talon.getSelectedSensorPosition(num);
+		}
+		else
+		return 42;
 	}
 	/*public void setVoltageCompensationRampRate(double r8){ //r8 == rate
 		if(isFound){
