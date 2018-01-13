@@ -2,13 +2,6 @@ package org.usfirst.frc.team3373.robot;
 import com.ctre.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class Actuator extends SupremeTalon{
-	//pot 1 max -960 29.2   min 100 1 cm     29.2, min 1 cm -101 relationship: .03279069767      287
-	/*m = deltaY/deltaX
-	 * cm = y
-	 * 28.2/860 (x-100) + 1cm = cms
-	 */
-	// Pot 1, 6cm, -219
-	//pot 1, 12cm, -385
 	double position1;
 	double maxPot;
 	double minPot;
@@ -23,32 +16,32 @@ public class Actuator extends SupremeTalon{
 		position1 = this.getPosition();
 		}
 	public double getPosition(){
+		//returns the distance in centimeters
 		double deltaPot = maxPot-minPot;
 		double deltaDistance = maxDistance - minDistance;
 		double slope = deltaDistance/deltaPot;
 		return slope*(this.getSelectedSensorPosition(0)-100)+1;
 	}
-	public double getRawPossition(int num){
+	public double getRawPosition(int num){
+		//returns Analog Position
 		return this.getSelectedSensorPosition(num);
 	}
-	public double getVelocity(){
-		return 2;
-	}
 	public void set(double speed){
-		if(getRawPossition(0)>maxPot){
+		//
+		if(getRawPosition(0)>maxPot-100){
 			if(speed<0){
-				super.set(speed);
+				super.accelerate(speed,.075);
 			}else{
-				super.set(0);
+				super.accelerate(0,.75);
 			}
-		}else if(getRawPossition(0)<minPot){
-			if(speed<0){
-				super.set(speed);
+		}else if(getRawPosition(0)<minPot+100){
+			if(speed>0){
+				super.accelerate(speed,.075);
 			}else{
-				super.set(0);
+				super.accelerate(0,.75);
 			}
 		}else {
-			super.set(speed);
+			super.accelerate(speed,.075);
 		}
 	}
 }
