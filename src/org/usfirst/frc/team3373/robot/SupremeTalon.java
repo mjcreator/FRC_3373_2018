@@ -7,10 +7,9 @@ import com.ctre.*;
 public class SupremeTalon {
 	boolean isFound = true;
     WPI_TalonSRX talon;
-	double maxDelta;
 	double currentSpeed;
 
-	public SupremeTalon(int port, double maxDel) {
+	public SupremeTalon(int port) {
 		try {
 			talon = new WPI_TalonSRX(port);
 		} catch (Exception e) {
@@ -21,7 +20,6 @@ public class SupremeTalon {
 			talon.setSensorPhase(false);
 		}catch (Exception e){			
 		}
-		maxDelta = maxDel;
 		currentSpeed = 0;
 	}
 	// This and other specific methods are no longer useful

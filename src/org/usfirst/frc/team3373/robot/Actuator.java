@@ -7,8 +7,8 @@ public class Actuator extends SupremeTalon{
 	double minPot;
 	double maxDistance;
 	double minDistance;
-	public Actuator(int port, double maxDelta,double maxPot1, double minPot1, double maxTravel, double minTravel){
-		super(port,maxDelta);
+	public Actuator(int port,double maxPot1, double minPot1, double maxTravel, double minTravel){
+		super(port);
 		maxPot = maxPot1;
 		minPot = minPot1;
 		maxDistance = maxTravel; // Distance is in Centimeters

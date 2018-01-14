@@ -6,12 +6,13 @@ public class DualActuators {
 	Actuator actuator1;
 	Actuator actuator2;
 	
-	public DualActuators(int port1, int port2, double maxDelta,double maxPot1,double maxPot2, double minPot1, double minPot2,
+	public DualActuators(int port1, int port2,double maxPot1,double maxPot2, double minPot1, double minPot2,
 			double maxDistance1,double maxDistance2,double minDistance1,double minDistance2){
-		actuator1 = new Actuator(port1,maxDelta,maxPot1, minPot1, maxDistance1, minDistance1);
-		actuator2 = new Actuator(port2,maxDelta,maxPot2,minPot2,maxDistance2,minDistance2);
+		actuator1 = new Actuator(port1,maxPot1, minPot1, maxDistance1, minDistance1);
+		actuator2 = new Actuator(port2,maxPot2,minPot2,maxDistance2,minDistance2);
 	}
 	public void goToPosition(double position){
+		//Sends both 
 		double deltaPosition1 = position - actuator1.getPosition();
 		double deltaPosition2 = position -actuator2.getPosition();
 		double deltaPositions = deltaPosition1 - deltaPosition2;
@@ -34,7 +35,7 @@ public class DualActuators {
 			speed1 = speed1Magnitude * speed1Direction;*/
 			//speed1 *= Math.pow(deltaPositions,2);
 		//}*/
-		if(deltaPosition1>deltaPosition2){
+		if(deltaPosition1>deltaPosition2){ // The Distance
 			speed1-= .02*Math.abs(deltaPositions);
 			if(speed2 < 1)
 				speed2+=.05;
@@ -63,5 +64,12 @@ public class DualActuators {
 	}
 	public double getPosition(){
 		return actuator1.getPosition();
+	}
+	public void testMode(SuperJoystick stick){
+		actuator1.superSet(stick.getRawAxis(1));
+		actuator2.superSet(stick.getRawAxis(5));
+		SmartDashboard.putNumber("Pot1", actuator1.getRawPosition(0));
+		SmartDashboard.putNumber("Pot2", actuator2.getRawPosition(0));
+		
 	}
 }

@@ -35,6 +35,23 @@ public class Robot extends TimedRobot {
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	int counter = 0;
 	
+	//Dual Linear Actuator Configs
+	int actuatorPort1 = 4;
+	int actuatorPort2 = 5;
+	static double minPot1 = 103;
+	static double minPot2 = 105;
+	static double maxPot1 = 986;
+	static double maxPot2 = 986;
+	static double minDistance1 = 1;
+	static double minDistance2 = 1;
+	static double maxDistance1 = 30;
+	static double maxDistance2 = 30;
+	
+	
+	
+	
+	
+	//Values for SuperJoystick getRawAxis()
 	int LX = 0;
 	int LY = 1;
 	int Ltrigger = 2;
@@ -43,8 +60,6 @@ public class Robot extends TimedRobot {
 	int RY = 5;
 	
 	DualActuators actuators;
-	Actuator actuator1;
-	Actuator actuator2;
 	
 	SupremeTalon sim;
 	
@@ -58,11 +73,9 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		counter = 0;
 		this.setPeriod(.01);
-		actuators = new DualActuators(5,4,.05,986,986,103,105,30,30,1,1);
-		actuator1= new Actuator(5,.05,986,103,30,1);
-		actuator2 = new Actuator(4,.05,986,105,30,1);
+		actuators = new DualActuators(actuatorPort2,actuatorPort1,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
 		
-		sim = new SupremeTalon(1,.05);
+		sim = new SupremeTalon(1);
 		
 		shooter = new SuperJoystick(0);
 		
@@ -128,22 +141,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		counter++;
-		SmartDashboard.putNumber("Counter",counter);
-		//System.out.println("Pot1"+ actuator1.getSelectedSensorPosition(0));
-		//System.out.println("Pot2"+ actuator2.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Distance1", actuator1.getPosition());
-		SmartDashboard.putNumber("Distance2", actuator2.getPosition());
-		//sim.accelerate(-1,.05);
-		if(shooter.getRawAxis(Rtrigger)>.1){
-			
+		if(shooter.getRawAxis(Rtrigger)>.1)
 			actuators.goToPosition(20);
-		}
-		else if(shooter.getRawAxis(Ltrigger)>.1){
+		else if(shooter.getRawAxis(Ltrigger)>.1)
 			actuators.goToPosition(5);
-		}else
+		else
 			actuators.goToPosition(actuators.getPosition());
 	}
 
@@ -152,9 +154,5 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		actuator1.superSet(shooter.getRawAxis(LY));
-		actuator2.superSet(shooter.getRawAxis(RY));
-		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
-		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
 	}
 }
