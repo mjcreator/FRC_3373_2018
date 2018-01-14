@@ -52,9 +52,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		actuators = new DualActuators(5,4,.05,960,965,100,101,29.2,29.3,1,.8);
-		actuator1= new Actuator(5,.05,960,100,29.2,1);
-		actuator2 = new Actuator(4,.05,965,101,29.3,0.8);
+		actuators = new DualActuators(5,4,.05,986,986,103,105,30,30,1,1);
+		actuator1= new Actuator(5,.05,986,103,30,1);
+		actuator2 = new Actuator(4,.05,986,105,30,1);
 		
 		sim = new SupremeTalon(1,.05);
 		
@@ -90,6 +90,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		actuator1.set(shooter.getRawAxis(LY));
+		actuator2.set(shooter.getRawAxis(RY));
+		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
+		/*
 		switch (m_autoSelected) {
 			case kCustomAuto:
 				// Put custom auto code here
@@ -97,8 +102,8 @@ public class Robot extends IterativeRobot {
 			case kDefaultAuto:
 			default:
 				// Put default auto code here
-				break;
-		}
+				break;*/
+		//}
 	}
 
 	/**
@@ -112,10 +117,15 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
 		SmartDashboard.putNumber("Distance1", actuator1.getPosition());
 		SmartDashboard.putNumber("Distance2", actuator2.getPosition());
-		//actuator1.set(shooter.getRawAxis(LY));
-		//actuator2.set(shooter.getRawAxis(RY));
 		//sim.accelerate(-1,.05);
-		actuators.goToPosition(15);
+		if(shooter.getRawAxis(Rtrigger)>.1){
+			
+			actuators.goToPosition(20);
+		}
+		else if(shooter.getRawAxis(Ltrigger)>.1){
+			actuators.goToPosition(5);
+		}else
+			actuators.goToPosition(actuators.getPosition());
 	}
 
 	/**
@@ -123,5 +133,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		actuator1.superSet(shooter.getRawAxis(LY));
+		actuator2.superSet(shooter.getRawAxis(RY));
+		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
 	}
 }
