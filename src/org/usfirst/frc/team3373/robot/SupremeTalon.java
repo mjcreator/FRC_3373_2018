@@ -112,24 +112,30 @@ public class SupremeTalon {
 			return 42;
 	}*/
 
-	public void accelerate(double speed, double time) {
+	public void accelerate(double speed, double time, boolean bypass) {
+		
 		//Linear Interpolation of speed
 		if (isFound) {
-			//double currentDelta = Math.abs(talon.get() - speed);
-			/*if (currentDelta > maxDelta) {
-				if (speed > currentSpeed) {
-					speed = currentSpeed + maxDelta;
-				} else {
-					speed = currentSpeed - maxDelta;
+			if(!bypass){
+				//double currentDelta = Math.abs(talon.get() - speed);
+				/*if (currentDelta > maxDelta) {
+					if (speed > currentSpeed) {
+						speed = currentSpeed + maxDelta;
+					} else {
+						speed = currentSpeed - maxDelta;
+					}
 				}
+				// System.out.println("Speed:" + speed);
+				currentSpeed = speed;
+				this.set(speed);*/
+				currentSpeed = currentSpeed + time * (speed - currentSpeed);
+				if(currentSpeed != speed)
+					System.out.println(currentSpeed);
+				talon.set(currentSpeed);
+			}else{
+				talon.set(speed);
 			}
-			// System.out.println("Speed:" + speed);
-			currentSpeed = speed;
-			this.set(speed);*/
-			currentSpeed = currentSpeed + time * (speed - currentSpeed);
-			if(currentSpeed != speed)
-				System.out.println(currentSpeed);
-			talon.set(currentSpeed);
+			
 		}
 	}
 	public double getSelectedSensorPosition(int num){

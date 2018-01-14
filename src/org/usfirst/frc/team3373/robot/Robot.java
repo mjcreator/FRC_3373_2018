@@ -9,8 +9,12 @@ package org.usfirst.frc.team3373.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.*;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
+
 import com.ctre.phoenix.motorcontrol.*;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -24,12 +28,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the build.properties file in the
  * project.
  */
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
 	private static final String kDefaultAuto = "Default";
 	private static final String kCustomAuto = "My Auto";
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
-	
+	int counter = 0;
 	
 	int LX = 0;
 	int LY = 1;
@@ -52,6 +56,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		counter = 0;
+		this.setPeriod(.01);
 		actuators = new DualActuators(5,4,.05,986,986,103,105,30,30,1,1);
 		actuator1= new Actuator(5,.05,986,103,30,1);
 		actuator2 = new Actuator(4,.05,986,105,30,1);
@@ -79,6 +85,17 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		String locations = DriverStation.getInstance().getGameSpecificMessage();
+		if(locations.charAt(0) == 'L'){
+			System.out.println("LeftSide Switch");
+		}else{
+			System.out.println("RightSide Switch");
+		}
+		if(locations.charAt(1) == 'L'){
+			System.out.println("LeftSide Scale");
+		}else{
+			System.out.println("RightSide Scale");
+		}
 		m_autoSelected = m_chooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
@@ -90,7 +107,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		actuator1.set(shooter.getRawAxis(LY));
+		/*actuator1.set(shooter.getRawAxis(LY));
 		actuator2.set(shooter.getRawAxis(RY));
 		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
 		SmartDashboard.putNumber("Pot2", actuator2.getSelectedSensorPosition(0));
@@ -111,6 +128,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		counter++;
+		SmartDashboard.putNumber("Counter",counter);
 		//System.out.println("Pot1"+ actuator1.getSelectedSensorPosition(0));
 		//System.out.println("Pot2"+ actuator2.getSelectedSensorPosition(0));
 		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));

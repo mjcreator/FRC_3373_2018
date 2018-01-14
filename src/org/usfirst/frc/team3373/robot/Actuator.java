@@ -30,18 +30,18 @@ public class Actuator extends SupremeTalon{
 		//
 		if(getRawPosition(0)>maxPot-50){
 			if(speed<0){
-				super.accelerate(speed,.075);
+				super.accelerate(speed,.075, false);
 			}else{
-				super.accelerate(0,.75);
+				super.accelerate(0,.75, false);
 			}
 		}else if(getRawPosition(0)<minPot+50){
 			if(speed>0){
-				super.accelerate(speed,.075);
+				super.accelerate(speed,.075, false);
 			}else{
-				super.accelerate(0,.75);
+				super.accelerate(0,.75, false);
 			}
 		}else {
-			super.accelerate(speed,.075);
+			super.accelerate(speed,.075, false);
 		}
 	}
 	public void superSet(double speed){
