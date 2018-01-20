@@ -6,10 +6,10 @@ public class DualActuators {
 	Actuator actuator1;
 	Actuator actuator2;
 	
-	public DualActuators(int port1, int port2,double maxPot1,double maxPot2, double minPot1, double minPot2,
+	public DualActuators(int port1, int port2, int port3, int port4,double maxPot1,double maxPot2, double minPot1, double minPot2,
 			double maxDistance1,double maxDistance2,double minDistance1,double minDistance2){
-		actuator1 = new Actuator(port1,maxPot1, minPot1, maxDistance1, minDistance1);
-		actuator2 = new Actuator(port2,maxPot2,minPot2,maxDistance2,minDistance2);
+		actuator1 = new Actuator(port1,port3,maxPot1, minPot1, maxDistance1, minDistance1);
+		actuator2 = new Actuator(port2,port4,maxPot2,minPot2,maxDistance2,minDistance2);
 	}
 	public void goToPosition(double position){
 		//Sends both 
