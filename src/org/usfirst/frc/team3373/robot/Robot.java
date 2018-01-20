@@ -29,25 +29,38 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
+	
+	double position;
+	
 	private static final String kDefaultAuto = "Default";
 	private static final String kCustomAuto = "My Auto";
 	private String m_autoSelected;
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	int counter = 0;
 	
+	
+	//SupremeTalon talon1;
+	//SupremeTalon talon2;
+	
 	//Dual Linear Actuator Configs
-	int actuatorPort1 = 4;
-	int actuatorPort2 = 5;
-	static double minPot1 = 103;
-	static double minPot2 = 105;
-	static double maxPot1 = 986;
-	static double maxPot2 = 986;
+	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
+	static int actuator1Port1 = 5;
+	static int actuator1Port2 = 8;
+	static int actuator2Port1 = 4;
+	static int actuator2Port2 = 9;
+	static double minPot1 = 104;
+	static double minPot2 = 108;
+	static double maxPot1 = 960;
+	static double maxPot2 = 989;
 	static double minDistance1 = 1;
 	static double minDistance2 = 1;
-	static double maxDistance1 = 30;
+	static double maxDistance1 = 29.1;
 	static double maxDistance2 = 30;
 	
-	
+	//Grabber Initialization
+	int grabberPort1 =0; // Need to updtate for the Robot
+	int grabberPort2 =0;
+	Grabber grabber;
 	
 	
 	
@@ -58,6 +71,8 @@ public class Robot extends TimedRobot {
 	int Rtrigger = 3;
 	int RX = 4;
 	int RY = 5;
+	
+	Actuator act1;
 	
 	DualActuators actuators;
 	
@@ -71,14 +86,17 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
+		
+		
+		act1 = new Actuator(actuator1Port1, actuator1Port2, maxPot1, minPot1, maxDistance1, minDistance1);
+		
+		position = 6;
 		counter = 0;
 		this.setPeriod(.01);
-		actuators = new DualActuators(actuatorPort2,actuatorPort1,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
-		
-		sim = new SupremeTalon(1);
-		
+		actuators = new DualActuators(actuator1Port1,actuator2Port1,actuator1Port2,actuator2Port2,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
 		shooter = new SuperJoystick(0);
-		
+		grabber = new Grabber(grabberPort1,grabberPort2);
 		
 		m_chooser.addDefault("Default Auto", kDefaultAuto);
 		m_chooser.addObject("My Auto", kCustomAuto);
@@ -86,6 +104,7 @@ public class Robot extends TimedRobot {
 	}
 
 	/**
+	 * Up is negative, Down is positive
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
 	 * chooser code works with the Java SmartDashboard. If you prefer the
@@ -120,6 +139,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		
 		/*actuator1.set(shooter.getRawAxis(LY));
 		actuator2.set(shooter.getRawAxis(RY));
 		SmartDashboard.putNumber("Pot1", actuator1.getSelectedSensorPosition(0));
@@ -141,12 +161,24 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		//Lift Code for Actuators Moving Together
 		if(shooter.getRawAxis(Rtrigger)>.1)
-			actuators.goToPosition(20);
+			actuators.goToPosition(25);
 		else if(shooter.getRawAxis(Ltrigger)>.1)
-			actuators.goToPosition(5);
+			actuators.goToPosition(3);
 		else
 			actuators.goToPosition(actuators.getPosition());
+		
+		//Grabber Code
+		if(shooter.isLBHeld())
+			grabber.exportCube();
+		else if(shooter.isRBHeld())
+			grabber.importCube();
+		else if(grabber.hasCube())
+			grabber.keepCube();
+		else
+			grabber.idle();
+			
 	}
 
 	/**
@@ -154,5 +186,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		actuators.calibrate(shooter, false);
 	}
 }
