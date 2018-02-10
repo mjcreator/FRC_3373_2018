@@ -44,6 +44,9 @@ public class SwerveControl {
 	SwerveWheel[] wheelArray2;
 
 	AHRS ahrs;
+	double previousAccelerationX;
+	double previousAccelerationY;
+	double previousAccelerationZ;
 
 	public SwerveControl(int LBdriveChannel, int LBrotateID, int LBencOffset, int LBEncMin, int LBEncMax,
 			double LBWheelMod, int LFdriveChannel, int LFrotateID, int LFencOffset, int LFEncMin, int LFEncMax,
@@ -65,6 +68,10 @@ public class SwerveControl {
 		wheelArray1 = new SwerveWheel[] { LFWheel, RBWheel };
 		wheelArray2 = new SwerveWheel[] { LBWheel, RFWheel };
 		ahrs = new AHRS(SerialPort.Port.kMXP);
+		previousAccelerationX = ahrs.getWorldLinearAccelX();
+		previousAccelerationY = ahrs.getWorldLinearAccelY();
+		previousAccelerationZ = ahrs.getWorldLinearAccelZ();
+		
 	}
 
 	public void turnToAngle(double x, double y) {
@@ -468,5 +475,21 @@ public class SwerveControl {
 			System.out.println("Straight");
 		}
 	}
+	public double getXJerk(){
+		double deltaAccel = ahrs.getWorldLinearAccelX() -previousAccelerationX;
+		previousAccelerationX = ahrs.getWorldLinearAccelX();
+		return deltaAccel/.01;
+	}
+	public double getYJerk(){
+		double deltaAccel = ahrs.getWorldLinearAccelY() -previousAccelerationY;
+		previousAccelerationY = ahrs.getWorldLinearAccelY();
+		return deltaAccel/.01;
+	}
+	public double getZJerk(){
+		double deltaAccel = ahrs.getWorldLinearAccelZ() -previousAccelerationZ;
+		previousAccelerationZ = ahrs.getWorldLinearAccelZ();
+		return deltaAccel/.01;
+	}
+	
 
 }

@@ -1,6 +1,4 @@
 package org.usfirst.frc.team3373.robot;
-import com.ctre.*;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Actuator{
@@ -33,10 +31,9 @@ public class Actuator{
 	}
 	public double getRawPosition(int num){
 		//returns Analog Position
-		return talon1.getSelectedSensorPosition(num); //talon1 is the one with the pot
+		return talon1.getRawSensor(); //talon1 is the one with the pot
 	}
 	public void set(double speed){
-		boolean isLimitReached =false;
 		double initialspeed = speed;
 		if(speed >0){//going towards top of travel
 			double distanceToTop = maxPot-talon1.getRawSensor();
@@ -44,7 +41,7 @@ public class Actuator{
 			if(speed > initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
-			if((talon1.getRawSensor()>maxPot)){
+			if((talon1.getRawSensor()>maxPot)){ //final fail safe for if the actuator exceeds the travel 
 				speed = 0;
 			}
 		}else if(speed<0){	//going towards bottom of travel
@@ -57,8 +54,6 @@ public class Actuator{
 				speed = 0;
 			}
 		}
-	
-		if(!isLimitReached)
 			talon1.accelerate(speed, .05, false);
 			talon2.accelerate(speed, .05, false);
 		
@@ -74,5 +69,19 @@ public class Actuator{
 		talon1.set(stick.getRawAxis(1)*.2);
 		talon2.set(stick.getRawAxis(1)*.2);
 		SmartDashboard.putNumber("Actuator PotValue " + actuatorName,talon1.getRawSensor());
+	}
+	public double getMaxHeight(){
+		return maxDistance;
+	}
+	public double getMinHeight(){
+		return minDistance;
+	}
+	public double getVelocity(){
+		double currentPosition = this.getPosition();
+		return (currentPosition-position1)/.01;
+	}
+	public void setVelocity(double velocity){ //in cm per second
+		double error = velocity - this.getVelocity(); 
+		
 	}
 }

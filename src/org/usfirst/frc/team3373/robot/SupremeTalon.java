@@ -129,7 +129,7 @@ public class SupremeTalon {
 				this.set(speed);*/
 				currentSpeed = currentSpeed + time * (speed - currentSpeed);
 				if(currentSpeed != speed)
-					System.out.println(currentSpeed);
+					//System.out.println(currentSpeed);
 				talon.set(currentSpeed);
 			}else{
 				talon.set(speed);
