@@ -11,9 +11,9 @@ public class SwerveControl {
 	double driveStraightAngle = 0;
 	double currentAngle = 0;
 	double angleError = 0;
-	double p = 5; // 100 is very close
-	double i = 0;
-	double d = 75; // 125
+	double p = 5;//5; // 100 is very close
+	double i = 0.0005;
+	double d = 75;//75; // 125
 	boolean isRobotCentric = true;
 	boolean isFieldCentric = false;
 	boolean isObjectCentric = false;
@@ -25,6 +25,8 @@ public class SwerveControl {
 	double objectRadius = 48;
 
 	boolean isToSpinAngle = false;
+	
+	boolean inAutonomous = false;
 
 	double radius;
 
@@ -355,17 +357,52 @@ public class SwerveControl {
 			RFWheel.setCurrentPosition();
 			LFWheel.setCurrentPosition();
 			LBWheel.setCurrentPosition();
-			RBWheel.setCurrentPosition();
+			RBWheel.setCurrentPosition(); 
 		} else {
 			RFWheel.rotate(); // Makes the wheels go to calculated target angle
 			LFWheel.rotate();
 			LBWheel.rotate();
 			RBWheel.rotate();
 		}
-		RFWheel.driveWheel(); // Make the wheels drive at their calculated speed
+	if(inAutonomous){
+		if(LBWheel.getAbsClosedLoopError() < 20 && LFWheel.getAbsClosedLoopError() < 20 && RBWheel.getAbsClosedLoopError() < 20 && RFWheel.getAbsClosedLoopError() < 20){
+			for(SwerveWheel wheel : wheelArray1){
+				wheel.driveWheel();
+			}
+			for(SwerveWheel wheel : wheelArray2){
+				wheel.driveWheel();
+			}
+		}else{
+			for(SwerveWheel wheel : wheelArray1){
+				wheel.stopWheel();
+			}
+			for(SwerveWheel wheel : wheelArray2){
+				wheel.stopWheel();
+			}
+		}
+	}else{
+		for(SwerveWheel wheel : wheelArray1){
+			wheel.driveWheel();
+		}
+		for(SwerveWheel wheel : wheelArray2){
+			wheel.driveWheel();
+		}
+	}
+		
+		/*for(SwerveWheel wheel : wheelArray1){
+			if(wheel.getAbsClosedLoopError() < 20){
+				wheel.driveWheel();
+			}
+		}
+		for(SwerveWheel wheel : wheelArray2){
+			if(wheel.getAbsClosedLoopError() < 20){
+				wheel.driveWheel();
+			}
+		}*/
+		/*RFWheel.driveWheel(); // Make the wheels drive at their calculated speed
 		LFWheel.driveWheel();
 		RBWheel.driveWheel();
-		LBWheel.driveWheel();
+		LBWheel.driveWheel(); */
 
 	}
 
@@ -491,5 +528,17 @@ public class SwerveControl {
 		return deltaAccel/.01;
 	}
 	
+	
+	public void setPID(){
+		for (SwerveWheel wheel : wheelArray1) {
+			wheel.setPID();
+		}
+		for (SwerveWheel wheel : wheelArray2) {
+			wheel.setPID();
+		}
+	}
+	public void setAutonomousBoolean(boolean auto){
+		inAutonomous = auto;
+	}
 
 }
