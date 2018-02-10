@@ -49,29 +49,36 @@ public class Robot extends TimedRobot {
 	
 	double robotWidth = 21.125; //TODO change robot dimensions to match this years robot
 	double robotLength = 33.5;
+
+
 	int LBdriveChannel = 1;
 	int LBrotateID = 2;
-	int LBencOffset = 433; // Zero values (value when wheel is turned to default 
-	int LBEncMin = 11; // zero- bolt hole facing front.)
-	int LBEncMax = 873;
+	int LBencOffset = 420; // Zero values (value when wheel is turned to default
+							// zero- bolt hole facing front.)
+	int LBEncMin = 10;
+	int LBEncMax = 880;
+	double LBWheelMod = .8922; //Modifier for wheel speed
 
 	int LFdriveChannel = 4;
 	int LFrotateID = 3;
-	int LFencOffset = 598;
-	int LFEncMin = 15;
-	int LFEncMax = 894;
+	int LFencOffset = 604;
+	int LFEncMin = 12;
+	int LFEncMax = 899;
+	double LFWheelMod = .9479;
 
 	int RBdriveChannel = 8;
 	int RBrotateID = 7;
-	int RBencOffset = 475;
-	int RBEncMin = 12;
-	int RBEncMax = 897;
+	int RBencOffset = 486;
+	int RBEncMin = 11;
+	int RBEncMax = 900;
+	double RBWheelMod = .95;
 
 	int RFdriveChannel = 6;
 	int RFrotateID = 5;
-	int RFencOffset = 207;
-	int RFEncMin = 12;
+	int RFencOffset = 212;
+	int RFEncMin = 11;
 	int RFEncMax = 895;
+	double RFWheelMod = .8922;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
@@ -170,6 +177,9 @@ public class Robot extends TimedRobot {
 			programIndex = 0;
 		}
 		lifter = new DualActuators(actuator1Port1,actuator2Port1,actuator1Port2,actuator2Port2,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
+		swerve = new SwerveControl(LBdriveChannel, LBrotateID, LBencOffset, LBEncMin, LBEncMax, LBWheelMod, LFdriveChannel,
+				LFrotateID, LFencOffset, LFEncMin, LFEncMax, LFWheelMod, RBdriveChannel, RBrotateID, RBencOffset, RBEncMin,
+				RBEncMax, RBWheelMod, RFdriveChannel, RFrotateID, RFencOffset, RFEncMin, RFEncMax, RFWheelMod, robotWidth, robotLength);
 		
 		
 		this.setPeriod(.01);
