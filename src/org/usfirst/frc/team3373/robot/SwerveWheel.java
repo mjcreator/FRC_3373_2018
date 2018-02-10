@@ -11,6 +11,8 @@ public class SwerveWheel {
 
 	WPI_TalonSRX rotateMotor; // The motor which spins the assembly
 	WPI_TalonSRX driveMotor; // The motor powering the wheel
+	private double previousEncValue;
+	boolean increasing;
 	private double targetAngle;
 	private double speed;
 	private int encoderUnitsPerRotation;// Range of encoder
@@ -23,10 +25,18 @@ public class SwerveWheel {
 
 	int rotationEncoderMin;
 	int rotationEncoderMax;
+	double P;
+	double I;
+	double D;
+	
 
 	public SwerveWheel(int driveMotorChannel, int rotateMotorID, double p, double i, double d, double rotateAng,
 			int distanceFromZero, int encoderOffset, int encoderMin, int encoderMax, double wheelMod) {
-
+		P = p;
+		I = i;
+		D = d;
+		previousEncValue = 50;
+		increasing = true;
 		rotateMotor = new WPI_TalonSRX(rotateMotorID);
 		rotateMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 1); // Read
 																				// the
@@ -48,6 +58,7 @@ public class SwerveWheel {
 																											// overflow
 																											// is
 																											// unused
+	//	setPID();
 		driveMotor = new WPI_TalonSRX(driveMotorChannel);
 		encOffset = encoderOffset;
 
@@ -58,13 +69,12 @@ public class SwerveWheel {
 		// rotateMotor.setPID(p, i, d);
 
 		// Configures the closed loop motor control
-		rotateMotor.config_kP(0, p, 0);
-		rotateMotor.config_kI(0, i, 0);
-		rotateMotor.config_kD(0, d, 0);
+		
 		rotateMotor.overrideLimitSwitchesEnable(false);
 		rotateMotor.setNeutralMode(NeutralMode.Brake); // Activates brake mode
 		rotateAngle = rotateAng;
 		wheelModifier = wheelMod;
+		setPID();
 
 	}
 
@@ -170,6 +180,9 @@ public class SwerveWheel {
 	public void driveWheel() { // Activates drive motor
 		driveMotor.set(speed * speedModifier);// *directionalModifier
 	}
+	public void stopWheel(){
+		driveMotor.set(0);
+	}
 
 	public int encoderCheck(int targetEncoder) { // Ensures encoders are not
 													// trying to go out of range
@@ -186,9 +199,15 @@ public class SwerveWheel {
 
 	public void rotate() { // Activates the rotation motor
 		// rotateMotor.changeControlMode(TalonControlMode.Position);
+		setPID();
+		int target = angleToEncoderUnit(getDeltaTheta()) + rotateMotor.getSensorCollection().getAnalogInRaw();
+		target = encoderCheck(target);
+		rotateMotor.set(ControlMode.Position, target);
+	}
+	
+	public int getEncoderTarget(){
 		int encoderTarget = angleToEncoderUnit(getDeltaTheta()) + rotateMotor.getSensorCollection().getAnalogInRaw();
-		encoderTarget = encoderCheck(encoderTarget);
-		rotateMotor.set(ControlMode.Position, encoderTarget);
+		return encoderTarget;
 	}
 
 	public double getDeltaTheta() { // Finds the change in angle
@@ -219,4 +238,69 @@ public class SwerveWheel {
 	public void setCurrentPosition() {
 		rotateMotor.set(ControlMode.Position, rotateMotor.getSensorCollection().getAnalogInRaw());
 	}
+	public void changePID(double p, double i, double d){
+		P= p;
+		I =i;
+		D = d;
+	}
+	public void setPID(){
+	//	rotateMotor.config_IntegralZone(0, 150, 0);
+			//if(Math.abs(angleToEncoderUnit(getDeltaTheta())) > 50){
+		if(Math.abs(rotateMotor.getClosedLoopError(0)) > 20){
+			rotateMotor.config_kP(0, P+ (20/Math.pow((Math.abs((rotateMotor.getClosedLoopError(0))) + 1), 7)), 0);
+			rotateMotor.config_kI(0, I, 0);
+			rotateMotor.config_kD(0, D, 0);
+		}else{
+			rotateMotor.config_kP(0, P+ 4.5/*4*/, 0);
+			rotateMotor.config_kI(0, I, 0);
+			rotateMotor.config_kD(0, D, 0);
+		}
+
+			/*}else{
+			rotateMotor.config_kP(0, 3.25,0);// +(Math.pow((Math.abs((angleToEncoderUnit(getDeltaTheta()))) + 3),1/2)), 0);
+			rotateMotor.config_kI(0, .00325*Math.abs(rotateMotor.getOutputCurrent()), 0);
+			rotateMotor.config_kD(0, 0, 0);
+			}*/
+		/*rotateMotor.config_kP(0, 5, 0);
+		rotateMotor.config_kI(0, 0, 0);
+		rotateMotor.config_kD(0, 75, 0);*/
+	/*	if(Math.abs(getEncoderTarget() - rotateMotor.getSensorCollection().getAnalogInRaw()) > 75){
+		rotateMotor.config_kP(0, SmartDashboard.getNumber("P",0), 0);
+		rotateMotor.config_kI(0, SmartDashboard.getNumber("I",0), 0);
+		rotateMotor.config_kD(0, SmartDashboard.getNumber("D", 0), 0);
+		}else{
+		rotateMotor.config_kP(0, SmartDashboard.getNumber("P",0) * 5, 0);
+		rotateMotor.config_kI(0, SmartDashboard.getNumber("I",0), 0);
+		rotateMotor.config_kD(0, SmartDashboard.getNumber("D", 0), 0);
+		}*/
+		/*rotateMotor.config_kP(0, P, 0);
+		rotateMotor.config_kI(0, I, 0);
+		rotateMotor.config_kD(0, D, 0);
+		*/
+	}
+ public boolean getPeriod(){
+		double currentEncValue = rotateMotor.getSensorCollection().getAnalogInRaw();
+		if(currentEncValue < previousEncValue-2 && increasing){
+			return true;
+		}
+		else if(currentEncValue > previousEncValue+2 && !increasing){
+			return true;
+		}
+		else if(currentEncValue > previousEncValue+2){
+			increasing = true;
+		}
+		else if(currentEncValue < previousEncValue-2){
+			increasing = false;
+		}
+		previousEncValue = currentEncValue;
+		return false;
+	}
+ 	public void goToEncPosition(double encoder){
+ 		double output = 0;
+ 		double error = encoder - rotateMotor.getSensorCollection().getAnalogInRaw();
+ 		
+ 	}
+ 	public int getAbsClosedLoopError(){
+ 		return Math.abs(rotateMotor.getClosedLoopError(0));
+ 	}
 }
