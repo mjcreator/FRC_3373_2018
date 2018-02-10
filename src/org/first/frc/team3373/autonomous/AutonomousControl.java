@@ -13,6 +13,19 @@ public class AutonomousControl {
 	Grabber grabber;
 	
 	Auto_Drive_Straight driveStraight;
+	Auto_1_0 auto_1_0;
+	Auto_1_1 auto_1_1;
+	Auto_2_0 auto_2_0;
+	Auto_2_1 auto_2_1;
+	Auto_2_2 auto_2_2;
+	Auto_3_0 auto_3_0;
+	Auto_3_1 auto_3_1;
+	Auto_3_2 auto_3_2;
+	Auto_4_0 auto_4_0;
+	Auto_4_1 auto_4_1;
+	Auto_4_2 auto_4_2;
+	Auto_5_0 auto_5_0;
+	Auto_5_1 auto_5_1;
 	
 	public AutonomousControl(int positional, int program, SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber){
 		positionalID = positional;
@@ -25,6 +38,20 @@ public class AutonomousControl {
 		
 		
 		driveStraight = new Auto_Drive_Straight(swerve, lifter ,grabber);
+		auto_1_0 = new Auto_1_0(swerve, lifter ,grabber);
+		auto_1_1 = new Auto_1_1(swerve, lifter ,grabber);
+		auto_2_0 = new Auto_2_0(swerve, lifter ,grabber);
+		auto_2_1 = new Auto_2_1(swerve, lifter ,grabber);
+		auto_2_2 = new Auto_2_2(swerve, lifter ,grabber);
+		auto_3_0 = new Auto_3_0(swerve, lifter ,grabber);
+		auto_3_1 = new Auto_3_1(swerve, lifter ,grabber);
+		auto_3_2 = new Auto_3_2(swerve, lifter ,grabber);
+		auto_4_0 = new Auto_4_0(swerve, lifter ,grabber);
+		auto_4_1 = new Auto_4_1(swerve, lifter ,grabber);
+		auto_4_2 = new Auto_4_2(swerve, lifter ,grabber);
+		auto_5_0 = new Auto_5_0(swerve, lifter ,grabber);
+		auto_5_1 = new Auto_5_1(swerve, lifter ,grabber);
+
 	}
 	
 	public void activateAuto(){
@@ -38,8 +65,10 @@ public class AutonomousControl {
 			
 			switch (programID) {
 			case 0:
+				auto_1_0.run();
 				break;
 			case 1:
+				auto_1_1.run();
 				break;
 			case 2:
 				driveStraight.run();
@@ -67,10 +96,13 @@ public class AutonomousControl {
 			
 			switch (programID) {
 			case 0:
+				auto_2_0.run();
 				break;
 			case 1:
+				auto_2_1.run();
 				break;
 			case 2:
+				auto_2_2.run();
 				break;
 			case 3:
 				driveStraight.run();
@@ -95,10 +127,13 @@ public class AutonomousControl {
 			
 			switch (programID) {
 			case 0:
+				auto_3_0.run();
 				break;
 			case 1:
+				auto_3_1.run();
 				break;
 			case 2:
+				auto_3_2.run();
 				break;
 			case 3:
 				driveStraight.run();
@@ -124,10 +159,13 @@ public class AutonomousControl {
 
 			switch (programID) {
 			case 0:
+				auto_4_0.run();
 				break;
 			case 1:
+				auto_4_1.run();
 				break;
 			case 2:
+				auto_4_2.run();
 				break;
 			case 3:
 				driveStraight.run();
@@ -153,8 +191,10 @@ public class AutonomousControl {
 
 			switch (programID) {
 			case 0:
+				auto_5_0.run();
 				break;
 			case 1:
+				auto_5_1.run();
 				break;
 			case 2:
 				driveStraight.run();
