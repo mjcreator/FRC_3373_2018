@@ -540,5 +540,32 @@ public class SwerveControl {
 	public void setAutonomousBoolean(boolean auto){
 		inAutonomous = auto;
 	}
+	public void autonomousStraight(){ //Does not hold alignment!!
+		isFieldCentric = true;
+		calculateSwerveControl(-.8, 0, 0);
+	}
+	
+	public void alignToAngle(int faceAngle){
+		if(ahrs.getAngle()%360 > (faceAngle + 5) % 360){
+			calculateSwerveControl(0, 0, -.3);
+		}else if(ahrs.getAngle()%360 > (faceAngle-5)%360){
+			calculateSwerveControl(0, 0, .3);
+		}
+	}
+	
+	public void autonomousDrive(int driveAngle, int faceAngle){
+		isFieldCentric = true;
+		
+		double leftXComponent = Math.sin((driveAngle - 90)%360);
+		double leftYComponent = Math.cos((driveAngle - 90)%360);
+				
+		if(ahrs.getAngle()%360 > (faceAngle + 5) % 360){
+			calculateSwerveControl(leftXComponent, leftYComponent, 0);
+		}else if(ahrs.getAngle()%360 > (faceAngle-5)%360){
+			calculateSwerveControl(leftXComponent, leftYComponent, 0);
+		}else{
+			calculateSwerveControl(leftXComponent, leftYComponent, 0);
+		}
+	}
 
 }
