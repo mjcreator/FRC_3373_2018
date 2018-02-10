@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team3373.robot;
 
+import org.first.frc.team3373.autonomous.*;
+
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -25,20 +27,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends TimedRobot {
 	
+	
+	AutonomousControl autoController;
+	
 	int robotCounter = 0;
 	
-	int FLEncoderMin = 300;
-	int FLEncoderMax = 300;
-	int FREncoderMin = 300;
-	int FREncoderMax = 300;
-	int BLEncoderMin = 300;
-	int BLEncoderMax = 300;
-	int BREncoderMin = 300;
-	int BREncoderMax = 300;
+	
 	
 	
 	//Swerve Initialization
 	SwerveControl swerve;
+	
+	int FLEncoderCalibMin = 300;  //Calibration defaults, which update as calibration is done.
+	int FLEncoderCalibMax = 300;
+	int FREncoderCalibMin = 300;
+	int FREncoderCalibMax = 300;
+	int BLEncoderCalibMin = 300;
+	int BLEncoderCalibMax = 300;
+	int BREncoderCalibMin = 300;
+	int BREncoderCalibMax = 300;
 	
 	double robotWidth = 21.125; //TODO change robot dimensions to match this years robot
 	double robotLength = 33.5;
@@ -81,14 +88,18 @@ public class Robot extends TimedRobot {
 	static double maxDistance1 = 26.5;
 	static double maxDistance2 = 26.5;
 	
-	DigitalInput ones; // Input for the 16-slot dial
-	DigitalInput twos;
-	DigitalInput fours;
+	DigitalInput positionalOnes; // Input for the 16-slot dial
+	DigitalInput positionalTwos;
+	DigitalInput positionalFours;
+	
+	DigitalInput programOnes; // Input for the 16-slot dial
+	DigitalInput programTwos;
+	DigitalInput programFours;
 	
 	//Grabber Initialization
 	int grabberPort1 =0; // Need to updtate for the Robot
 	int grabberPort2 =0;
-	///Grabber grabber;
+	Grabber grabber;
 	
 	
 	
@@ -102,12 +113,15 @@ public class Robot extends TimedRobot {
 	
 	Actuator act1;
 	
-	DualActuators actuators;
+	DualActuators lifter;
 	
 	SupremeTalon sim;
 	
 	SuperJoystick driver;
 	SuperJoystick shooter;
+	
+	int positionalIndex = 1;// for testing purposes
+	int programIndex = 1;// for testing purposes
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -116,6 +130,48 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotInit() {
 		robotCounter = 0;
+		
+		positionalOnes = new DigitalInput(0);
+		positionalTwos = new DigitalInput(1);
+		positionalFours = new DigitalInput(2);
+		
+		programOnes = new DigitalInput(3);
+		programTwos = new DigitalInput(4);
+		programFours = new DigitalInput(5);
+		
+		
+		
+
+		if (positionalOnes.get()) {
+			positionalIndex += 1;
+		}
+		if (positionalTwos.get()) {
+			positionalIndex += 2;
+		}
+		if (positionalFours.get()) {
+			positionalIndex += 4;
+		}
+		if (positionalIndex == 8) {
+			positionalIndex = 0;
+		}
+		
+		
+
+		if (programOnes.get()) {
+			programIndex += 1;
+		}
+		if (programTwos.get()) {
+			programIndex += 2;
+		}
+		if (programFours.get()) {
+			programIndex += 4;
+		}
+		if (programIndex == 8) {
+			programIndex = 0;
+		}
+		lifter = new DualActuators(actuator1Port1,actuator2Port1,actuator1Port2,actuator2Port2,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
+		
+		
 		this.setPeriod(.01);
 				
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
@@ -123,14 +179,12 @@ public class Robot extends TimedRobot {
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		
-		ones = new DigitalInput(0);
-		twos = new DigitalInput(1);
-		fours = new DigitalInput(2);
+
 		
-		actuators = new DualActuators(actuator1Port1,actuator2Port1,actuator1Port2,actuator2Port2,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
+		
 		driver = new SuperJoystick(0);
 		shooter = new SuperJoystick(1);
-		//grabber = new Grabber(grabberPort1,grabberPort2);
+		grabber = new Grabber(grabberPort1,grabberPort2);
 	}
 
 	/**
@@ -147,17 +201,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		String locations = DriverStation.getInstance().getGameSpecificMessage();
-		if(locations.charAt(0) == 'L'){
-			System.out.println("LeftSide Switch");
-		}else{
-			System.out.println("RightSide Switch");
-		}
-		if(locations.charAt(1) == 'L'){
-			System.out.println("LeftSide Scale");
-		}else{
-			System.out.println("RightSide Scale");
-		}
+		autoController = new AutonomousControl(positionalIndex, programIndex, swerve, lifter, grabber);
 
 	}
 
@@ -176,38 +220,8 @@ public class Robot extends TimedRobot {
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		
-		int startingPositionIndex = 1;// for testing purposes
-		if (ones.get()) {
-			startingPositionIndex += 1;
-		}
-		if (twos.get()) {
-			startingPositionIndex += 2;
-		}
-		if (fours.get()) {
-			startingPositionIndex += 4;
-		}
-		if (startingPositionIndex == 8) {
-			startingPositionIndex = 0;
-		}
 		
-		switch (startingPositionIndex) {
-		case 0:
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			break;
-		}
+		autoController.activateAuto();
 	}
 
 	/**
@@ -228,11 +242,11 @@ public class Robot extends TimedRobot {
 		
 		//Lift Code for Actuators Moving Together
 		if(shooter.getRawAxis(Rtrigger)>.1)
-			actuators.goToPosition(26.5);
+			lifter.goToPosition(26.5);
 		else if(shooter.getRawAxis(Ltrigger)>.1)
-			actuators.goToPosition(3);
+			lifter.goToPosition(3);
 		else
-			actuators.goToPosition(actuators.getPosition());
+			lifter.goToPosition(lifter.getPosition());
 		
 		//Grabber Code
 		/*if(shooter.isLBHeld())
@@ -252,13 +266,13 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 		int index = 1;// for testing purposes
-		if (ones.get()) {
+		if (positionalOnes.get()) {
 			index += 1;
 		}
-		if (twos.get()) {
+		if (positionalTwos.get()) {
 			index += 2;
 		}
-		if (fours.get()) {
+		if (positionalFours.get()) {
 			index += 4;
 		}
 		if (index == 8) {
@@ -298,44 +312,44 @@ public class Robot extends TimedRobot {
 		swerve.LFWheel.rotateMotor.set(ControlMode.Disabled, 0);
 		swerve.LBWheel.rotateMotor.set(ControlMode.Disabled, 0);
 
-		if (swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < FREncoderMin) {
-			FREncoderMin = swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		if (swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < FREncoderCalibMin) {
+			FREncoderCalibMin = swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
 		}
-		if (swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > FREncoderMax) {
-			FREncoderMax = swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
-		}
-
-		if (swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < BREncoderMin) {
-			BREncoderMin = swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
-		}
-		if (swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > BREncoderMax) {
-			BREncoderMax = swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		if (swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > FREncoderCalibMax) {
+			FREncoderCalibMax = swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
 		}
 
-		if (swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < FLEncoderMin) {
-			FLEncoderMin = swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		if (swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < BREncoderCalibMin) {
+			BREncoderCalibMin = swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
 		}
-		if (swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > FLEncoderMax) {
-			FLEncoderMax = swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		if (swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > BREncoderCalibMax) {
+			BREncoderCalibMax = swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
 		}
 
-		if (swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < BLEncoderMin) {
-			BLEncoderMin = swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		if (swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < FLEncoderCalibMin) {
+			FLEncoderCalibMin = swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
 		}
-		if (swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > BLEncoderMax) {
-			BLEncoderMax = swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		if (swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > FLEncoderCalibMax) {
+			FLEncoderCalibMax = swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
 		}
-		SmartDashboard.putNumber("FL Encoder Min: " , FLEncoderMin);
-		SmartDashboard.putNumber("FL Encoder Max: " , FLEncoderMax);
 
-		SmartDashboard.putNumber("FR Encoder Min: " , FREncoderMin);
-		SmartDashboard.putNumber("FR Encoder Max: " , FREncoderMax);
+		if (swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() < BLEncoderCalibMin) {
+			BLEncoderCalibMin = swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		}
+		if (swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw() > BLEncoderCalibMax) {
+			BLEncoderCalibMax = swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw();
+		}
+		SmartDashboard.putNumber("FL Encoder Min: " , FLEncoderCalibMin);
+		SmartDashboard.putNumber("FL Encoder Max: " , FLEncoderCalibMax);
 
-		SmartDashboard.putNumber("BL Encoder Min: " , BLEncoderMin);
-		SmartDashboard.putNumber("BL Encoder Max: " , BLEncoderMax);
+		SmartDashboard.putNumber("FR Encoder Min: " , FREncoderCalibMin);
+		SmartDashboard.putNumber("FR Encoder Max: " , FREncoderCalibMax);
 
-		SmartDashboard.putNumber("BR Encoder Min: " , BREncoderMin);
-		SmartDashboard.putNumber("BR Encoder Max: " , BREncoderMax);
+		SmartDashboard.putNumber("BL Encoder Min: " , BLEncoderCalibMin);
+		SmartDashboard.putNumber("BL Encoder Max: " , BLEncoderCalibMax);
+
+		SmartDashboard.putNumber("BR Encoder Min: " , BREncoderCalibMin);
+		SmartDashboard.putNumber("BR Encoder Max: " , BREncoderCalibMax);
 
 		SmartDashboard.putNumber("Current FL Encoder: " , swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw());
 		SmartDashboard.putNumber("Current FR Encoder: " , swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw());
