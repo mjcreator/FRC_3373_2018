@@ -14,7 +14,13 @@ public class Auto_Drive_Straight {
 		}
 		
 		public void run(){
-			swerve.calculateSwerveControl(.3, 0, 0);
+			if(!swerve.hasHitBump()){
+				swerve.turbo();
+			swerve.calculateSwerveControl(-1, 0, 0);
+			}
+			else{
+				swerve.calculateSwerveControl(0, 0, 0);
+			}
 			lifter.goToPosition(22);
 			//Grabber deployment.
 		}

@@ -46,6 +46,11 @@ public class SwerveControl {
 	SwerveWheel[] wheelArray2;
 
 	AHRS ahrs;
+	boolean collidedPositiveY;
+	boolean collidedPositiveX;
+	boolean collidedNegativeY;
+	boolean collidedNegativeX;
+	boolean hasBumped;
 	double previousAccelerationX;
 	double previousAccelerationY;
 	double previousAccelerationZ;
@@ -73,6 +78,11 @@ public class SwerveControl {
 		previousAccelerationX = ahrs.getWorldLinearAccelX();
 		previousAccelerationY = ahrs.getWorldLinearAccelY();
 		previousAccelerationZ = ahrs.getWorldLinearAccelZ();
+		collidedPositiveY =false;
+		collidedPositiveX= false;
+		collidedNegativeY = false;
+		collidedNegativeX = false;
+		hasBumped = false;
 		
 	}
 
@@ -513,18 +523,21 @@ public class SwerveControl {
 		}
 	}
 	public double getXJerk(){
-		double deltaAccel = ahrs.getWorldLinearAccelX() -previousAccelerationX;
-		previousAccelerationX = ahrs.getWorldLinearAccelX();
+		double currentAccel = ahrs.getWorldLinearAccelX();
+		double deltaAccel = currentAccel -previousAccelerationX;
+		previousAccelerationX = currentAccel;
 		return deltaAccel/.01;
 	}
 	public double getYJerk(){
-		double deltaAccel = ahrs.getWorldLinearAccelY() -previousAccelerationY;
-		previousAccelerationY = ahrs.getWorldLinearAccelY();
+		double currentAccel = ahrs.getWorldLinearAccelY();
+		double deltaAccel = currentAccel -previousAccelerationY;
+		previousAccelerationY = currentAccel;
 		return deltaAccel/.01;
 	}
 	public double getZJerk(){
-		double deltaAccel = ahrs.getWorldLinearAccelZ() -previousAccelerationZ;
-		previousAccelerationZ = ahrs.getWorldLinearAccelZ();
+		double currentAccel = ahrs.getWorldLinearAccelZ();
+		double deltaAccel = currentAccel -previousAccelerationZ;
+		previousAccelerationZ = currentAccel;
 		return deltaAccel/.01;
 	}
 	
@@ -567,5 +580,46 @@ public class SwerveControl {
 			calculateSwerveControl(leftXComponent, leftYComponent, 0);
 		}
 	}
+	public boolean hasCollidedPositiveX(){
+		if(this.getXJerk()>100)
+			collidedPositiveX = true;
+		return collidedPositiveX;
+	}
+	public boolean hasCollidedPositiveY(){
+		if(this.getYJerk()>100)
+			collidedPositiveY = true;
+		return collidedPositiveY;
+	}
+	public boolean hasCollidedNegativeX(){
+		if(this.getXJerk()<-100)
+			collidedNegativeX = true;
+		return collidedNegativeX;
+	}
+	public boolean hasCollidedNegativeY(){
+		if(this.getXJerk()<-100)
+			collidedNegativeY = true;
+		return collidedNegativeY;
+	}
+	public boolean hasHitBump(){
+		if(Math.abs(this.getZJerk()) >125)
+			hasBumped = true;
+		return hasBumped;
+	}
+	public void resetBump(){
+		hasBumped = false;
+	}
+	public void resetNegativeY(){
+		collidedNegativeY = false;
+	}
+	public void resetNegativeX(){
+		collidedNegativeX=false;
+	}
+	public void resetPositiveX(){
+		collidedPositiveX=false;
+	}
+	public void resetPositiveY(){
+		collidedPositiveY = false;
+	}
+	
 
 }
