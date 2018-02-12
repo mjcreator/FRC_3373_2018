@@ -51,9 +51,11 @@ public class SwerveControl {
 	boolean collidedNegativeY;
 	boolean collidedNegativeX;
 	boolean hasBumped;
+	double hasBumpedCounter;
 	double previousAccelerationX;
 	double previousAccelerationY;
 	double previousAccelerationZ;
+
 
 	public SwerveControl(int LBdriveChannel, int LBrotateID, int LBencOffset, int LBEncMin, int LBEncMax,
 			double LBWheelMod, int LFdriveChannel, int LFrotateID, int LFencOffset, int LFEncMin, int LFEncMax,
@@ -83,6 +85,7 @@ public class SwerveControl {
 		collidedNegativeY = false;
 		collidedNegativeX = false;
 		hasBumped = false;
+		hasBumpedCounter = 0;
 		
 	}
 
@@ -602,11 +605,14 @@ public class SwerveControl {
 	}
 	public boolean hasHitBump(){
 		if(Math.abs(this.getZJerk()) >125)
+			hasBumpedCounter++;
+		if(hasBumpedCounter>3)
 			hasBumped = true;
 		return hasBumped;
 	}
 	public void resetBump(){
 		hasBumped = false;
+		hasBumpedCounter = 0;
 	}
 	public void resetNegativeY(){
 		collidedNegativeY = false;
