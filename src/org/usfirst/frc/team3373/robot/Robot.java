@@ -130,6 +130,14 @@ public class Robot extends TimedRobot {
 	int positionalIndex = 1;// for testing purposes
 	int programIndex = 1;// for testing purposes
 	
+	double xJerkMax;
+	double yJerkMax;
+	double zJerkMax;
+	
+	double xAccelMax;
+	double yAccelMax;
+	double zAccelMax;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -195,6 +203,14 @@ public class Robot extends TimedRobot {
 		driver = new SuperJoystick(0);
 		shooter = new SuperJoystick(1);
 		grabber = new Grabber(grabberPort1,grabberPort2);
+		
+		xJerkMax = 0;
+		yJerkMax = 0;
+		zJerkMax = 0;
+		
+		xAccelMax = 0;
+		yAccelMax = 0;
+		zAccelMax = 0;
 	}
 
 	/**
@@ -291,6 +307,62 @@ public class Robot extends TimedRobot {
 		
 		switch (index) {
 		case 0:
+			SmartDashboard.putBoolean("Hast Collidedx+", swerve.hasCollidedPositiveX());
+			SmartDashboard.putBoolean("Hast Collidedy+", swerve.hasCollidedPositiveY());
+			SmartDashboard.putBoolean("Hast Collidedx-", swerve.hasCollidedNegativeX());
+			SmartDashboard.putBoolean("Hast Collidedy-", swerve.hasCollidedNegativeY());
+			SmartDashboard.putBoolean("Hast Bump", swerve.hasHitBump());
+			if(driver.isYHeld()){
+				swerve.resetBump();
+			}
+			if(driver.isAHeld()){
+				swerve.resetBump();
+				swerve.resetNegativeX();
+				swerve.resetNegativeY();
+				swerve.resetPositiveX();
+				swerve.resetPositiveY();
+			}
+			SmartDashboard.putNumber("X-Jerk: ", Math.abs(swerve.getXJerk()));
+			SmartDashboard.putNumber("Y-Jerk: ", Math.abs(swerve.getYJerk()));
+			SmartDashboard.putNumber("Z-Jerk: ", Math.abs(swerve.getZJerk()));
+			
+			SmartDashboard.putNumber("X-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelX()));
+			SmartDashboard.putNumber("Y-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelY()));
+			SmartDashboard.putNumber("Z-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelZ()));
+			double currentXJerk = swerve.getXJerk();
+			double currentYJerk = swerve.getYJerk();
+			double currentZJerk = swerve.getZJerk();
+			if(Math.abs(currentXJerk) > Math.abs(xJerkMax)){
+				xJerkMax = currentXJerk;
+			}
+			if(Math.abs(currentYJerk) > Math.abs(yJerkMax)){
+				yJerkMax = currentYJerk;
+			}
+			if(Math.abs(currentZJerk) > Math.abs(zJerkMax)){
+				zJerkMax = currentZJerk;
+			}
+			
+			if(Math.abs(swerve.ahrs.getWorldLinearAccelX()) > Math.abs(xAccelMax)){
+				xAccelMax = swerve.ahrs.getWorldLinearAccelX();
+			}
+			if(Math.abs(swerve.ahrs.getWorldLinearAccelY()) > Math.abs(yAccelMax)){
+				yAccelMax = swerve.ahrs.getWorldLinearAccelY();
+			}
+			if(Math.abs(swerve.ahrs.getWorldLinearAccelZ()) > Math.abs(zAccelMax)){
+				zAccelMax = swerve.ahrs.getWorldLinearAccelZ();
+			}
+			
+			
+			SmartDashboard.putNumber("X-Jerk Max: ", Math.abs(xJerkMax));
+			SmartDashboard.putNumber("Y-Jerk Max: ", Math.abs(yJerkMax));
+			SmartDashboard.putNumber("Z-Jerk Max: ", Math.abs(zJerkMax));
+			
+			SmartDashboard.putNumber("X-Accel Max: ", Math.abs(xAccelMax));
+			SmartDashboard.putNumber("Y-Accel Max: ", Math.abs(yAccelMax));
+			SmartDashboard.putNumber("Z-Accel Max: ", Math.abs(zAccelMax));
+			
+			activateControl();
+			
 			break;
 		case 1:
 			break;
@@ -390,7 +462,16 @@ public class Robot extends TimedRobot {
 			swerve.normalSpeed();
 		}
 		
-		
+		if (driver.getRawAxis(Rtrigger) > .1) {
+			swerve.isFieldCentric = true;
+			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+		}/* else if (driver.getRawAxis(Ltrigger) > .1) {
+			swerve.isFieldCentric = false;
+			swerve.calculateObjectControl(driver.getRawAxis(RX));
+		}*/ else {
+			swerve.isFieldCentric = false;
+			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+		}
 		
 		
 		
