@@ -44,7 +44,11 @@ public class SwerveControl {
 
 	SwerveWheel[] wheelArray1;
 	SwerveWheel[] wheelArray2;
-
+	//autonomous sensors
+	int integralGainsDriveCounter;
+	Ultrasonic backSonic;
+	//Ultrasonic leftSonic;
+	//Ultrasonic rightSonic;
 	AHRS ahrs;
 	boolean collidedPositiveY;
 	boolean collidedPositiveX;
@@ -55,13 +59,15 @@ public class SwerveControl {
 	double previousAccelerationX;
 	double previousAccelerationY;
 	double previousAccelerationZ;
+	boolean isAtAngle;
+	boolean isToPosition;
 
 
 	public SwerveControl(int LBdriveChannel, int LBrotateID, int LBencOffset, int LBEncMin, int LBEncMax,
 			double LBWheelMod, int LFdriveChannel, int LFrotateID, int LFencOffset, int LFEncMin, int LFEncMax,
 			double LFWheelMod, int RBdriveChannel, int RBrotateID, int RBencOffset, int RBEncMin, int RBEncMax,
 			double RBWheelMod, int RFdriveChannel, int RFrotateID, int RFencOffset, int RFEncMin, int RFEncMax,
-			double RFWheelMod, double width, double length) {
+			double RFWheelMod, double width, double length, int leftUltraPort, int rightUltraPort,int backUltraPort) {
 		robotWidth = width;
 		robotLength = length;
 		angleToDiagonal = Math.toDegrees(Math.atan2(length, width));
@@ -86,6 +92,12 @@ public class SwerveControl {
 		collidedNegativeX = false;
 		hasBumped = false;
 		hasBumpedCounter = 0;
+		backSonic = new Ultrasonic(backUltraPort);
+		//leftSonic = new Ultrasonic(leftUltraPort);
+		//rightSonic = new Ultrasonic(rightUltraPort);
+		isAtAngle = false;
+		integralGainsDriveCounter = 0;
+		isToPosition = false;
 		
 	}
 
@@ -481,23 +493,21 @@ public class SwerveControl {
 	}
 
 	public void setSpinAngle(int angle) {
-		spinAngle = angle + ahrs.getAngle();
-		isToSpinAngle = false;
+		spinAngle = angle;
 	}
 
-	public void spinXdegrees() {
-		if (!isToSpinAngle) {
-			if (ahrs.getAngle() < spinAngle - 50) {
-				calculateSwerveControl(0, 0, .8);
-				isToSpinAngle = false;
-			} else if (ahrs.getAngle() < spinAngle - .2) {
-				calculateSwerveControl(0, 0, .6);
-				isToSpinAngle = false;
-			} else {
-				calculateSwerveControl(0, 0, 0);
-				isToSpinAngle = true;
-			}
-		}
+	public void spintoXdegrees() {
+			double angleError= spinAngle -(ahrs.getYaw()%360);
+			this.calculateSwerveControl(0, 0, angleError*.001);
+			if(((ahrs.getYaw()%360)<spinAngle+1)||((ahrs.getYaw()%360)<spinAngle-1)) //If the angle is within 1 degree of the target
+					isAtAngle = true;
+			
+	}
+	public boolean isAtSpinAngle(){
+		return isAtAngle;
+	}
+	public void resetAngleFlag(){
+		isAtAngle = false;
 	}
 
 	public void setDriveStraightAngle(double angle) {
@@ -569,20 +579,55 @@ public class SwerveControl {
 		}
 	}
 	
-	public void autonomousDrive(int driveAngle, int faceAngle){
+	public void autonomousDrive(double driveAngle, double faceAngle, double XspeedMod, double YspeedMod){
 		isFieldCentric = true;
-		
-		double leftXComponent = Math.sin((driveAngle - 90)%360);
-		double leftYComponent = Math.cos((driveAngle - 90)%360);
-				
-		if(ahrs.getAngle()%360 > (faceAngle + 5) % 360){
-			calculateSwerveControl(leftXComponent, leftYComponent, 0);
-		}else if(ahrs.getAngle()%360 > (faceAngle-5)%360){
-			calculateSwerveControl(leftXComponent, leftYComponent, 0);
-		}else{
-			calculateSwerveControl(leftXComponent, leftYComponent, 0);
+		int direction = 1;
+		faceAngle = (faceAngle-90)%360;
+		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
+		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
+		double angleError = Math.abs(faceAngle - ahrs.getYaw()%360);
+		SmartDashboard.putNumber("Angle Error", angleError);
+		if((ahrs.getYaw()%360)>180){
+			direction =-1;
+			angleError = 360 -angleError;
+		}
+		calculateSwerveControl(leftXComponent*XspeedMod, leftYComponent*YspeedMod, angleError*direction*.01);
+	}
+	public void driveForwardXInchesFromSurface(double target, int faceAngle){
+		//integralGainsDriveCounter++;
+		/*if(isToPosition){
+			integralGainsDriveCounter = 0;
+		}*/
+		double deltaDistance = (target - backSonic.getDistance());
+		double direction =  deltaDistance/Math.abs(deltaDistance);
+		double motorPower = Math.sqrt(Math.sqrt(Math.abs(deltaDistance)))*.23;
+		if(motorPower > 1){
+			motorPower =1;
+		}
+		if(motorPower < -1){
+			motorPower=-1;
+		}
+		SmartDashboard.putNumber("target", deltaDistance);
+		SmartDashboard.putNumber("MotorPower", motorPower);
+		if(direction >0)
+			this.autonomousDrive(90,faceAngle, motorPower, motorPower);
+		else
+			this.autonomousDrive(270,faceAngle, motorPower, motorPower);
+		if(Math.abs(deltaDistance) < .25)
+			isToPosition = true;
+		else{
+			isToPosition = false;
 		}
 	}
+	public void driveSidewaseXInchesFromSurface(double target, boolean leftSensor){
+		double deltaDistance;
+		//Wif(leftSensor)
+			//deltaDistance = target - leftSonic.getDistance();
+		//else
+			//deltaDistance = target - rightSonic.getDistance();
+		//this.autonomousDrive(0, 0, deltaDistance*.1, deltaDistance*.1);
+	}
+	
 	public boolean hasCollidedPositiveX(){
 		if(this.getXJerk()>100)
 			collidedPositiveX = true;
@@ -626,6 +671,7 @@ public class SwerveControl {
 	public void resetPositiveY(){
 		collidedPositiveY = false;
 	}
+	
 	
 
 }

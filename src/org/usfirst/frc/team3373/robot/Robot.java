@@ -80,6 +80,10 @@ public class Robot extends TimedRobot {
 	int RFEncMax = 895;
 	double RFWheelMod = .8922;
 	
+	int leftUltraSonicPort =1;
+	int rightUltraSonicPort = 2;
+	int backUltraSonicPort = 0;
+	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
 	static int actuator1Port1 = 7;
@@ -187,7 +191,7 @@ public class Robot extends TimedRobot {
 		lifter = new DualActuators(actuator1Port1,actuator2Port1,actuator1Port2,actuator2Port2,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
 		swerve = new SwerveControl(LBdriveChannel, LBrotateID, LBencOffset, LBEncMin, LBEncMax, LBWheelMod, LFdriveChannel,
 				LFrotateID, LFencOffset, LFEncMin, LFEncMax, LFWheelMod, RBdriveChannel, RBrotateID, RBencOffset, RBEncMin,
-				RBEncMax, RBWheelMod, RFdriveChannel, RFrotateID, RFencOffset, RFEncMin, RFEncMax, RFWheelMod, robotWidth, robotLength);
+				RBEncMax, RBWheelMod, RFdriveChannel, RFrotateID, RFencOffset, RFEncMin, RFEncMax, RFWheelMod, robotWidth, robotLength, leftUltraSonicPort, rightUltraSonicPort, backUltraSonicPort);
 		
 		
 		this.setPeriod(.01);
@@ -238,16 +242,16 @@ public class Robot extends TimedRobot {
 	public void autonomousPeriodic() {
 		
 		swerve.setAutonomousBoolean(true);
+		swerve.driveForwardXInchesFromSurface(50, 90);
 		
-		
-		
+		/*
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		
 		
-		autoController.activateAuto();
+		autoController.activateAuto();*/
 	}
 
 	/**
@@ -307,6 +311,8 @@ public class Robot extends TimedRobot {
 		
 		switch (index) {
 		case 0:
+			SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
+			swerve.isFieldCentric = true;
 			SmartDashboard.putBoolean("Hast Collidedx+", swerve.hasCollidedPositiveX());
 			SmartDashboard.putBoolean("Hast Collidedy+", swerve.hasCollidedPositiveY());
 			SmartDashboard.putBoolean("Hast Collidedx-", swerve.hasCollidedNegativeX());

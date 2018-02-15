@@ -251,7 +251,7 @@ public class SwerveWheel {
 			rotateMotor.config_kI(0, I, 0);
 			rotateMotor.config_kD(0, D, 0);
 		}else{
-			rotateMotor.config_kP(0, P+ 4.5/*4*/, 0);
+			rotateMotor.config_kP(0, P/*+4.5/4*/, 0);
 			rotateMotor.config_kI(0, I, 0);
 			rotateMotor.config_kD(0, D, 0);
 		}
