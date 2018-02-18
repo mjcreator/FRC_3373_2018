@@ -609,25 +609,30 @@ public class SwerveControl {
 		faceAngle = (faceAngle-90)%360;
 		SmartDashboard.putNumber("face Angle", faceAngle);
 		SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichSensor));
-		double angleError = Math.abs(faceAngle - (360 - ahrs.getYaw())%360);
 		SmartDashboard.putNumber("Angle Error", angleError);
 		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
+	
+		double angleError= (faceAngle - Math.abs((360 - ahrs.getYaw())%360));
+		double optimalDirection = 1;
 		if(angleError > 0){
 			directionMod = -1;
 		}
-		double distanceError = 0;
-		try{
-		//distanceError = driveDistance - Math.cos(angleError) * ultraSonicSensors.getDistance(whichSensor);
-		}catch(Exception e){
+		
+		if(Math.abs(angleError) > 180){
+			optimalDirection = -1;
+			//if(directionMod == -1){
+			angleError = (360-Math.abs(angleError))%360;
+		//	}
 		}
-		driveAngle = driveAngle -(distanceError*.2);
+		//double distanceError = driveDistance - Math.cos(angleError) * ultraSonicSensors.getDistance(whichSensor);
+		//driveAngle = driveAngle; //-(distanceError*.02);
 		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
-		SmartDashboard.putNumber("Distance Error", distanceError);
+		//SmartDashboard.putNumber("Distance Error", distanceError);
 		System.out.println((driveAngle));
 		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
 		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
-		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.01*directionMod);
+		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 	}
 	public void setDriveDistance(double distance){
 		driveDistance = distance;
