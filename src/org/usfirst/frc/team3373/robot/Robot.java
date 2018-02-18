@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
 	
 	int leftUltraSonicPort =1;
 	int rightUltraSonicPort = 2;
-	int backUltraSonicPort = 0;
+	int backUltraSonicPort = 3;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
@@ -232,26 +232,38 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		autoController = new AutonomousControl(positionalIndex, programIndex, swerve, lifter, grabber);
+		swerve.ahrs.reset();
+		swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(3));
 
 	}
 
 	/**
 	 * This function is called periodically during autonomous.
 	 */
-	@Override
 	public void autonomousPeriodic() {
-		
+		//swerve.autonomousDrive(0, 90, 1, 1, 3);
 		swerve.setAutonomousBoolean(true);
-		swerve.driveForwardXInchesFromSurface(50, 90);
+		//swerve.driveForwardXInchesFromSurface(50, 90);
+		//SmartDashboard.putNumber("Angle", swerve.ahrs.getYaw());
+		//swerve.driveForwardXInchesFromSurface(100, 97);
+		/*SmartDashboard.putNumber("Voltage3", swerve.ultraSonicSensors.getVoltage(3));
+		SmartDashboard.putNumber("Voltage2", swerve.ultraSonicSensors.getVoltage(2));
+		SmartDashboard.putNumber("Voltage1", swerve.ultraSonicSensors.getVoltage(1));
+		SmartDashboard.putNumber("Distance1", swerve.ultraSonicSensors.getDistance(1));
+		SmartDashboard.putNumber("Distance2", swerve.ultraSonicSensors.getDistance(2));
+		SmartDashboard.putNumber("Distance3", swerve.ultraSonicSensors.getDistance(3));
+		//SmartDashboard.putNumber("Voltage2", swerve.leftSonic.getVoltage());
+		//SmartDashboard.putNumber("Voltage3", swerve.rightSonic.getVoltage());
+		//SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
+		*/
 		
-		/*
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		
 		
-		autoController.activateAuto();*/
+		autoController.activateAuto();
 	}
 
 	/**
@@ -259,8 +271,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		SmartDashboard.putNumber("Jerk Z", swerve.getZJerk());
+		SmartDashboard.putNumber("Roll", swerve.ahrs.getRoll());
 		swerve.setAutonomousBoolean(false);
-		
+		this.activateControl();
 		
 		
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
@@ -271,12 +285,12 @@ public class Robot extends TimedRobot {
 		
 		
 		//Lift Code for Actuators Moving Together
-		if(shooter.getRawAxis(Rtrigger)>.1)
+	/*	if(shooter.getRawAxis(Rtrigger)>.1)
 			lifter.goToPosition(26.5);
 		else if(shooter.getRawAxis(Ltrigger)>.1)
 			lifter.goToPosition(3);
 		else
-			lifter.goToPosition(lifter.getPosition());
+			lifter.goToPosition(lifter.getPosition()); */
 		
 		//Grabber Code
 		/*if(shooter.isLBHeld())
@@ -311,15 +325,16 @@ public class Robot extends TimedRobot {
 		
 		switch (index) {
 		case 0:
-			SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
+			//SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
 			swerve.isFieldCentric = true;
-			SmartDashboard.putBoolean("Hast Collidedx+", swerve.hasCollidedPositiveX());
+			/*SmartDashboard.putBoolean("Hast Collidedx+", swerve.hasCollidedPositiveX());
 			SmartDashboard.putBoolean("Hast Collidedy+", swerve.hasCollidedPositiveY());
 			SmartDashboard.putBoolean("Hast Collidedx-", swerve.hasCollidedNegativeX());
 			SmartDashboard.putBoolean("Hast Collidedy-", swerve.hasCollidedNegativeY());
-			SmartDashboard.putBoolean("Hast Bump", swerve.hasHitBump());
+			SmartDashboard.putBoolean("Hast Bump", swerve.hasHitBump());*/
 			if(driver.isYHeld()){
 				swerve.resetBump();
+				zJerkMax = 0;
 			}
 			if(driver.isAHeld()){
 				swerve.resetBump();
@@ -327,17 +342,32 @@ public class Robot extends TimedRobot {
 				swerve.resetNegativeY();
 				swerve.resetPositiveX();
 				swerve.resetPositiveY();
+				zJerkMax = 0;
+				xJerkMax = 0;
+				yJerkMax = 0;
+				swerve.collidedPositiveX = false;
 			}
-			SmartDashboard.putNumber("X-Jerk: ", Math.abs(swerve.getXJerk()));
-			SmartDashboard.putNumber("Y-Jerk: ", Math.abs(swerve.getYJerk()));
-			SmartDashboard.putNumber("Z-Jerk: ", Math.abs(swerve.getZJerk()));
+			
 			
 			SmartDashboard.putNumber("X-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelX()));
 			SmartDashboard.putNumber("Y-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelY()));
 			SmartDashboard.putNumber("Z-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelZ()));
+			SmartDashboard.putNumber("BR Encoder: ", swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw());
 			double currentXJerk = swerve.getXJerk();
 			double currentYJerk = swerve.getYJerk();
 			double currentZJerk = swerve.getZJerk();
+			SmartDashboard.putNumber("Z-Jerk: ", currentZJerk);
+			SmartDashboard.putNumber("X-Jerk", currentXJerk);
+			SmartDashboard.putNumber("Y-Jerk", currentYJerk);
+			if(Math.abs(currentZJerk) > 250){
+				swerve.hasBumped = true;
+			}
+			if(Math.abs(currentXJerk) > 80){
+				swerve.collidedPositiveX = true;
+			}
+			
+			SmartDashboard.putBoolean("Has Hit", swerve.hasBumped);
+
 			if(Math.abs(currentXJerk) > Math.abs(xJerkMax)){
 				xJerkMax = currentXJerk;
 			}
@@ -347,7 +377,7 @@ public class Robot extends TimedRobot {
 			if(Math.abs(currentZJerk) > Math.abs(zJerkMax)){
 				zJerkMax = currentZJerk;
 			}
-			
+			/*
 			if(Math.abs(swerve.ahrs.getWorldLinearAccelX()) > Math.abs(xAccelMax)){
 				xAccelMax = swerve.ahrs.getWorldLinearAccelX();
 			}
@@ -356,17 +386,18 @@ public class Robot extends TimedRobot {
 			}
 			if(Math.abs(swerve.ahrs.getWorldLinearAccelZ()) > Math.abs(zAccelMax)){
 				zAccelMax = swerve.ahrs.getWorldLinearAccelZ();
-			}
+			}*/
 			
-			
+			//SmartDashboard.putNumber("Index", index+1);
 			SmartDashboard.putNumber("X-Jerk Max: ", Math.abs(xJerkMax));
 			SmartDashboard.putNumber("Y-Jerk Max: ", Math.abs(yJerkMax));
 			SmartDashboard.putNumber("Z-Jerk Max: ", Math.abs(zJerkMax));
-			
+			/*
 			SmartDashboard.putNumber("X-Accel Max: ", Math.abs(xAccelMax));
 			SmartDashboard.putNumber("Y-Accel Max: ", Math.abs(yAccelMax));
 			SmartDashboard.putNumber("Z-Accel Max: ", Math.abs(zAccelMax));
-			
+			SmartDashboard.putNumber("Angle", (360 - swerve.ahrs.getYaw())%360);
+*/
 			activateControl();
 			
 			break;
@@ -447,6 +478,7 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void activateControl(){
+		swerve.setAutonomousBoolean(false);
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
@@ -467,7 +499,7 @@ public class Robot extends TimedRobot {
 		} else {
 			swerve.normalSpeed();
 		}
-		
+		if(!swerve.hasBumped && !swerve.hasCollidedPositiveX()){
 		if (driver.getRawAxis(Rtrigger) > .1) {
 			swerve.isFieldCentric = true;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
@@ -477,6 +509,10 @@ public class Robot extends TimedRobot {
 		}*/ else {
 			swerve.isFieldCentric = false;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+		}
+		}
+		else{
+			swerve.calculateSwerveControl(0, 0, 0);
 		}
 		
 		
