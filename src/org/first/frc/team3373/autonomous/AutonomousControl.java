@@ -97,6 +97,7 @@ public class AutonomousControl {
 			switch (programID) {
 			case 0:
 				auto_2_0.run();
+				System.out.println("running");
 				break;
 			case 1:
 				auto_2_1.run();
