@@ -19,14 +19,31 @@ public class Ultrasonic {
 	}
 	public double getDistance(){
 		double currentDistance = ((sensor.getAverageVoltage()/.00097656258)/25.4)-2;//Vcc/5120 Vcc =.00097656258 supplied voltage (5v) v/vcc/5120 = mm /25.4 = in. - 2 inches because range 0 is the inside of the cone
-		if(Math.abs(currentDistance - previousAccurateDistance) > 10){
+		if(Math.abs(currentDistance - previousDistance) > 10 && !inaccurate){
+			previousAccurateDistance = previousDistance;
 			inaccurate = true;
 			
-		}	
-		if(inaccurate)
+		}
+		
+		if(inaccurate){
+			if(Math.abs(currentDistance-previousDistance) < 10){
+				inaccuracyCounter++;
+			}
+			else{
+				inaccuracyCounter = 0;
+			}
+		}
+		if(inaccuracyCounter > 2 && inaccurate){
+			inaccurate = false;
+			inaccuracyCounter = 0;
+		}
+		else if(inaccurate){
+			previousDistance = currentDistance;
 			return previousAccurateDistance;
-		else 
+		}
+			
 		//previousDistance = currentDistance;
+		previousDistance = currentDistance;
 		return currentDistance; 
 	}
 	public double getVoltage(){
