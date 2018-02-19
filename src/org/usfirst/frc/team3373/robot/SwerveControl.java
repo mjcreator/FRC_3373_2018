@@ -34,6 +34,8 @@ public class SwerveControl {
 	double orientationOffset;
 	double sensorToWheelDistance = 3.25;
 	double boilerRadius = 10;
+	int startOffset = 0;
+	int futureOffset = 0;
 
 	int robotFront = 1; // Which side of the robot is the front. 1 is default,
 						// goes up to 4.
@@ -64,6 +66,7 @@ public class SwerveControl {
 	boolean isToPosition;
 	double isToPositionCounter;
 	double driveDistance;
+	int autonomousOffset;
 
 
 	public SwerveControl(int LBdriveChannel, int LBrotateID, int LBencOffset, int LBEncMin, int LBEncMax,
@@ -100,6 +103,7 @@ public class SwerveControl {
 		isToPosition = false;
 		isToPositionCounter =0;
 		driveDistance = 0;
+		autonomousOffset = 0;
 		
 	}
 
@@ -201,7 +205,7 @@ public class SwerveControl {
 			RX = 0;
 		}
 		if (isFieldCentric) {
-			orientationOffset = ahrs.getYaw(); // if in field centric mode make
+			orientationOffset = ahrs.getYaw() + startOffset; // if in field centric mode make
 												// offset equal to the current
 												// angle of the navX
 		} else {
@@ -216,6 +220,7 @@ public class SwerveControl {
 				orientationOffset += 270;
 			}
 		}
+		
 
 		orientationOffset = orientationOffset % 360;
 
@@ -532,7 +537,7 @@ public class SwerveControl {
 	}
 	
 	public void setSpinAngle(int angle) {
-		spinAngle = (angle + 360 - 90)%360;
+		spinAngle = (angle + 360 - autonomousOffset)%360;
 		System.out.println("SpAn: " + spinAngle);
 		resetAngleFlag();
 	}
@@ -572,10 +577,13 @@ public class SwerveControl {
 		SmartDashboard.putNumber("Spincount: ", spinAngleCounter);
 		
 }
+	public void setAutonomousOffset(int offset){
+		autonomousOffset = offset;
+	}
 	
 	public void autonomousDrive(double driveAngle, double faceAngle){
 		isFieldCentric = true;
-		faceAngle = (faceAngle + 360 -90)%360;
+		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
 		SmartDashboard.putNumber("face Angle", faceAngle);
 		SmartDashboard.putNumber("Angle Error", angleError);
 		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
@@ -605,7 +613,7 @@ public class SwerveControl {
 	public void autonomousDrive(double driveAngle, double faceAngle, double XspeedMod, double YspeedMod){
 		isFieldCentric = true;
 		int directionMod = 1;
-		faceAngle = (faceAngle + 360 -90)%360;
+		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
 		SmartDashboard.putNumber("face Angle", faceAngle);
 		SmartDashboard.putNumber("Angle Error", angleError);
 		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
@@ -636,7 +644,7 @@ public class SwerveControl {
 	public void autonomousDrive(double driveAngle, double faceAngle, double XspeedMod, double YspeedMod, int whichUltrasonic){
 		isFieldCentric = true;
 		int directionMod = 1;
-		faceAngle = (faceAngle + 360 -90)%360;
+		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
 		SmartDashboard.putNumber("face Angle", faceAngle);
 		SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichUltrasonic));
 		SmartDashboard.putNumber("Angle Error", angleError);
@@ -779,6 +787,12 @@ public class SwerveControl {
 	}
 	public void resetPositiveY(){
 		collidedPositiveY = false;
+	}
+	public void setStartOffset(int offset){
+		futureOffset = offset * -1;
+	}
+	public void activateStartOffset(){
+		startOffset = futureOffset;
 	}
 	
 	

@@ -7,7 +7,8 @@ public class DualActuators {
 	Actuator actuator2;
 	private double maxSpeed;
 	private double previousPosition;
-	private int integralCounter;
+	private double target;
+	private boolean isToPosition;
 	
 	public DualActuators(int port1, int port2, int port3, int port4,double maxPot1,double maxPot2, double minPot1, double minPot2,
 			double maxDistance1,double maxDistance2,double minDistance1,double minDistance2){
@@ -15,7 +16,7 @@ public class DualActuators {
 		actuator2 = new Actuator(port2,port4,maxPot2,minPot2,maxDistance2,minDistance2);
 		previousPosition = this.getPosition();
 		maxSpeed= .6;
-		integralCounter = 0;
+		isToPosition = false;
 	}
 	public void goToPosition(double position){
 		//Prevents the target position from being past extrema on actuators
@@ -64,6 +65,8 @@ public class DualActuators {
 		SmartDashboard.putNumber("speed1", speed1);
 		SmartDashboard.putNumber("speed2", speed2);
 		SmartDashboard.putNumber("deltaSpeed", speed1-speed2);
+		if((this.getPosition() <target+1)&&(this.getPosition()>target-1))
+			isToPosition = true;
 		
 		
 		
@@ -72,6 +75,12 @@ public class DualActuators {
 	}
 	public double getPosition(){
 		return (actuator1.getPosition()+actuator2.getPosition())/2;
+	}
+	public boolean isToPosition(){
+		return isToPosition;
+	}
+	public void resetIsToPosition(){
+		isToPosition = false;
 	}
 	public void calibrate(SuperJoystick stick, boolean isFirstActuator){
 		// Go to Actuator.calibrate to view proccedure

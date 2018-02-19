@@ -44,7 +44,8 @@ public class Auto_Drive_Straight {
 		}
 		
 		public void run(){
-			SmartDashboard.putNumber("Angle", (360 - swerve.ahrs.getYaw())%360);
+			swerve.driveXInchesFromSurface(45, 90, 2);
+		/*	SmartDashboard.putNumber("Angle", (360 - swerve.ahrs.getYaw())%360);
 			if(!spinCheck){
 				swerve.setSpinAngle(0);
 				swerve.spinToXdegrees();
@@ -71,7 +72,7 @@ public class Auto_Drive_Straight {
 					
 					
 				}
-			}
+			}*/
 			
 /*			if(!spinCheck1){
 				swerve.setSpinAngle(0);

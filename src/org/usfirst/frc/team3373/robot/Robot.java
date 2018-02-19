@@ -47,8 +47,10 @@ public class Robot extends TimedRobot {
 	int BREncoderCalibMin = 300;
 	int BREncoderCalibMax = 300;
 	
-	double robotWidth = 22.75; //TODO change robot dimensions to match this years robot
-	double robotLength = 27.375;
+/*	double robotWidth = 22.75; //TODO change robot dimensions to match this years robot
+	double robotLength = 27.375;*/
+	double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
+	double robotLength = 26.8125;
 
 
 	int LBdriveChannel = 1;
@@ -265,6 +267,11 @@ public class Robot extends TimedRobot {
 		autoController.activateAuto();
 	}
 
+	
+	
+	public void teleopInit(){
+		swerve.activateStartOffset();
+	}
 	/**
 	 * This function is called periodically during operator control.
 	 */
