@@ -40,7 +40,7 @@ public class AutonomousControl {
 		driveStraight = new Auto_Drive_Straight(swerve, lifter ,grabber);
 		auto_1_0 = new Auto_1_0(swerve, lifter ,grabber, this.isScaleLeft());
 		auto_1_1 = new Auto_1_1(swerve, lifter ,grabber);
-		auto_2_0 = new Auto_2_0(swerve, lifter ,grabber);
+		auto_2_0 = new Auto_2_0(swerve, lifter ,grabber,this.isSwitchLeft(),this.isScaleLeft());
 		auto_2_1 = new Auto_2_1(swerve, lifter ,grabber);
 		auto_2_2 = new Auto_2_2(swerve, lifter ,grabber);
 		auto_3_0 = new Auto_3_0(swerve, lifter ,grabber);
@@ -97,6 +97,7 @@ public class AutonomousControl {
 			switch (programID) {
 			case 0:
 				auto_2_0.run();
+				System.out.println("running");
 				break;
 			case 1:
 				auto_2_1.run();

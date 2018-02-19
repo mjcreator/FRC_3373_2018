@@ -246,12 +246,16 @@ public class SwerveWheel {
 	public void setPID(){
 	//	rotateMotor.config_IntegralZone(0, 150, 0);
 			//if(Math.abs(angleToEncoderUnit(getDeltaTheta())) > 50){
+		/*rotateMotor.config_kP(5, 0, 0);
+		rotateMotor.config_kI(0, 0, 0);
+		rotateMotor.config_kD(75, 0, 0);*/
+		
 		if(Math.abs(rotateMotor.getClosedLoopError(0)) > 20){
 			rotateMotor.config_kP(0, P+ (20/Math.pow((Math.abs((rotateMotor.getClosedLoopError(0))) + 1), 7)), 0);
 			rotateMotor.config_kI(0, I, 0);
 			rotateMotor.config_kD(0, D, 0);
 		}else{
-			rotateMotor.config_kP(0, P+ 4.5/*4*/, 0);
+			rotateMotor.config_kP(0, P/*+4.5/4*/, 0);
 			rotateMotor.config_kI(0, I, 0);
 			rotateMotor.config_kD(0, D, 0);
 		}
