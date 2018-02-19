@@ -13,22 +13,22 @@ public class Grabber {
 	}
 	public void importCube(){ //put cube in grabber
 		isCubeIn = true;
-		grab1.set(Relay.Value.kForward);
-		grab2.set(Relay.Value.kReverse);
+		grab2.set(Relay.Value.kForward);
+		grab1.set(Relay.Value.kReverse);
 	}
 	public void exportCube(){ //remove cube from grabber
 		isCubeIn = false;
-		grab1.set(Relay.Value.kReverse);
-		grab2.set(Relay.Value.kForward);
+		grab2.set(Relay.Value.kReverse);
+		grab1.set(Relay.Value.kForward);
 	}
 /*	public void keepCube(){ // keep cube in grabber
 		grab1.accelerate(.2,.05,false);
 		grab2.accelerate(.2,.05,false);
-	}
-	public void idle(){ // grabber wait for cube input
-		grab1.accelerate(0,.05,false);
-		grab2.accelerate(0,.05,false);
 	}*/
+	public void idle(){ // grabber wait for cube input
+		grab1.set(Relay.Value.kOff);
+		grab2.set(Relay.Value.kOff);
+	}
 	
 	public boolean hasCube(){
 		return isCubeIn;

@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
 	double robotLength = 26.8125;
 
 
-	int LBdriveChannel = 2;
+/*	int LBdriveChannel = 2;
 	int LBrotateID = 1;
 	int LBencOffset = 420; // Zero values (value when wheel is turned to default
 							// zero- bolt hole facing front.)
@@ -80,7 +80,37 @@ public class Robot extends TimedRobot {
 	int RFencOffset = 212;
 	int RFEncMin = 11;
 	int RFEncMax = 895;
+	double RFWheelMod = .8922;*/
+	
+	int LBdriveChannel = 2;
+	int LBrotateID = 1;
+	int LBencOffset = 590; // Zero values (value when wheel is turned to default
+							// zero- bolt hole facing front.)
+	int LBEncMin = 10;
+	int LBEncMax = 879;
+	double LBWheelMod = 1; //Modifier for wheel speed
+
+	int LFdriveChannel = 4;
+	int LFrotateID = 3;
+	int LFencOffset = 602;
+	int LFEncMin = 11;
+	int LFEncMax = 889;
+	double LFWheelMod = 1;
+
+	int RBdriveChannel = 8;
+	int RBrotateID = 7;
+	int RBencOffset = 333;
+	int RBEncMin = 11;
+	int RBEncMax = 987;
+	double RBWheelMod = .95;
+
+	int RFdriveChannel = 6;
+	int RFrotateID = 5;
+	int RFencOffset = 628;
+	int RFEncMin = 10;
+	int RFEncMax = 889;
 	double RFWheelMod = .8922;
+	
 	
 	int leftUltraSonicPort =0;
 	int rightUltraSonicPort = 1;
@@ -111,7 +141,7 @@ public class Robot extends TimedRobot {
 	
 	//Grabber Initialization
 	int grabberPort1 =0; // Need to updtate for the Robot
-	int grabberPort2 =0;
+	int grabberPort2 =1;
 	Grabber grabber;
 	
 	
@@ -423,6 +453,8 @@ public class Robot extends TimedRobot {
 			calibrateSwerve();
 			break;
 		}
+		calibrateSwerve();
+	//	grabber.exportCube();
 		
 		
 		/*actuators.calibrate(shooter, false);
@@ -505,7 +537,6 @@ public class Robot extends TimedRobot {
 		} else {
 			swerve.normalSpeed();
 		}
-		if(!swerve.hasBumped && !swerve.hasCollidedPositiveX()){
 		if (driver.getRawAxis(Rtrigger) > .1) {
 			swerve.isFieldCentric = true;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
@@ -516,9 +547,12 @@ public class Robot extends TimedRobot {
 			swerve.isFieldCentric = false;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
 		}
-		}
-		else{
-			swerve.calculateSwerveControl(0, 0, 0);
+		if(driver.isRBHeld()){
+			grabber.importCube();
+		}else if(driver.isLBHeld()){
+			grabber.exportCube();
+		}else{
+			grabber.idle();
 		}
 		
 		
