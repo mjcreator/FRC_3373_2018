@@ -44,8 +44,8 @@ public class Auto_Drive_Straight {
 		}
 		
 		public void run(){
-			swerve.driveXInchesFromSurface(45, 90, 2);
-		/*	SmartDashboard.putNumber("Angle", (360 - swerve.ahrs.getYaw())%360);
+		//	swerve.driveXInchesFromSurface(45, 90, 2);
+			SmartDashboard.putNumber("Angle", (360 - swerve.ahrs.getYaw())%360);
 			if(!spinCheck){
 				swerve.setSpinAngle(0);
 				swerve.spinToXdegrees();
@@ -55,12 +55,12 @@ public class Auto_Drive_Straight {
 				}
 			}else{
 				if(!swerve.hasHitBump()){
-					swerve.autonomousDrive(180, 0, 1, 1, 1);
+					swerve.autonomousDrive(0, 0);
 					SmartDashboard.putNumber("Distance from wall: ", swerve.ultraSonicSensors.getDistance(1));
 				}else{
 					driveCounter++;
 					if(driveCounter < 100){
-					swerve.autonomousDrive(0, 0, 1, 1, 1);
+					swerve.autonomousDrive(0, 0);
 					swerve.setSpinAngle(90);
 					}else if(!swerve.isAtSpinAngle()){
 						swerve.setSpinAngle(90);
@@ -72,9 +72,9 @@ public class Auto_Drive_Straight {
 					
 					
 				}
-			}*/
-			
-/*			if(!spinCheck1){
+			}
+			/*
+			if(!spinCheck1){
 				swerve.setSpinAngle(0);
 				swerve.spinToXdegrees();
 				if(swerve.isAtSpinAngle()){

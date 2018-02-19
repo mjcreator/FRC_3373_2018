@@ -563,7 +563,7 @@ public class SwerveControl {
 		//	}
 		}
 		
-		this.calculateSwerveControl(0, 0, (Math.sqrt(Math.sqrt(Math.abs(angleError)))+1)*.2*directionMod*optimalDirection);
+		this.calculateSwerveControl(0, 0, (Math.sqrt(Math.sqrt(Math.abs(angleError)))+1)*.15*directionMod*optimalDirection);
 		System.out.println("Spinning.");
 		SmartDashboard.putNumber("Anglelelele Error: ", angleError);
 		if(Math.abs(angleError) < 4 && spinAngleCounter > 20){ //If the angle is within 4 degrees of the target

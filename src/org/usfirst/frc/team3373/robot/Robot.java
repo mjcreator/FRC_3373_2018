@@ -118,14 +118,14 @@ public class Robot extends TimedRobot {
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
-	static int actuator1Port1 = 7;
-	static int actuator1Port2 = 8;
-	static int actuator2Port1 = 10;
-	static int actuator2Port2 = 9;
-	static double minPot1 = 97;
-	static double minPot2 = 95;
-	static double maxPot1 = 725;
-	static double maxPot2 = 726;
+	static int actuator1Port1 = 9; //left
+	static int actuator1Port2 = 10;//right
+	static int actuator2Port1 = 11;
+	static int actuator2Port2 = 12;
+	static double minPot1 = 101;
+	static double minPot2 = 99;
+	static double maxPot1 = 729;
+	static double maxPot2 = 729;
 	static double minDistance1 = 2;
 	static double minDistance2 = 2;
 	static double maxDistance1 = 26.5;
@@ -162,6 +162,8 @@ public class Robot extends TimedRobot {
 	
 	SuperJoystick driver;
 	SuperJoystick shooter;
+	
+	ClimbBar climbBar;
 	
 	int positionalIndex = 1;// for testing purposes
 	int programIndex = 1;// for testing purposes
@@ -239,6 +241,7 @@ public class Robot extends TimedRobot {
 		driver = new SuperJoystick(0);
 		shooter = new SuperJoystick(1);
 		grabber = new Grabber(grabberPort1,grabberPort2);
+		climbBar = new ClimbBar(2);
 		
 		xJerkMax = 0;
 		yJerkMax = 0;
@@ -395,10 +398,11 @@ public class Robot extends TimedRobot {
 			SmartDashboard.putNumber("Z-Jerk: ", currentZJerk);
 			SmartDashboard.putNumber("X-Jerk", currentXJerk);
 			SmartDashboard.putNumber("Y-Jerk", currentYJerk);
+			
 			if(Math.abs(currentZJerk) > 250){
 				swerve.hasBumped = true;
 			}
-			if(Math.abs(currentXJerk) > 80){
+			if(Math.abs(currentXJerk) > 100){
 				swerve.collidedPositiveX = true;
 			}
 			
@@ -522,10 +526,17 @@ public class Robot extends TimedRobot {
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.setPID();
+		climbBar.controlDropBar();
 		
 		SmartDashboard.putNumber("Navx", swerve.ahrs.getYaw());
 		
+		//   *_*_*_*_*_*_*_* SHARED MAIN CONTROLS *_*_*_*_*_*_*_*
 		
+		if(driver.isRStickHeld()){// && shooter.isRStickHeld()){
+		climbBar.setState(false);
+		}else{
+		climbBar.setState(true);
+		}
 		
 		
 		//   *_*_*_*_*_*_*_* DRIVER MAIN CONTROLS *_*_*_*_*_*_*_*
@@ -554,6 +565,8 @@ public class Robot extends TimedRobot {
 		}else{
 			grabber.idle();
 		}
+		
+		
 		
 		
 		
