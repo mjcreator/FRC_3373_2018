@@ -51,8 +51,8 @@ public class Robot extends TimedRobot {
 	double robotLength = 33.5;
 
 
-	int LBdriveChannel = 1;
-	int LBrotateID = 2;
+	int LBdriveChannel = 2;
+	int LBrotateID = 1;
 	int LBencOffset = 420; // Zero values (value when wheel is turned to default
 							// zero- bolt hole facing front.)
 	int LBEncMin = 10;
