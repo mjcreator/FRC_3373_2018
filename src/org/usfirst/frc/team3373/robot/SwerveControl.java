@@ -67,6 +67,7 @@ public class SwerveControl {
 	double isToPositionCounter;
 	double driveDistance;
 	int autonomousOffset;
+	double previousDistanceReading;
 
 
 	public SwerveControl(int LBdriveChannel, int LBrotateID, int LBencOffset, int LBEncMin, int LBEncMax,
@@ -104,6 +105,7 @@ public class SwerveControl {
 		isToPositionCounter =0;
 		driveDistance = 0;
 		autonomousOffset = 0;
+		previousDistanceReading = driveDistance;
 		
 	}
 
@@ -692,10 +694,65 @@ public class SwerveControl {
 		SmartDashboard.putNumber("Distanceeeeec error: ", distanceError);
 		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 	}
+	public void autonomousDriveCrossingOver(double driveAngle, double faceAngle, double XspeedMod, double YspeedMod, int whichUltrasonic){
+		double currentDistanceReading = ultraSonicSensors.getDistance(whichUltrasonic);
+		if(Math.abs(currentDistanceReading - previousDistanceReading) > 10 && Math.abs(currentDistanceReading -previousDistanceReading) < 20){
+			this.setDriveDistance(currentDistanceReading);
+		}
+		isFieldCentric = true;
+		int directionMod = 1;
+		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
+		SmartDashboard.putNumber("face Angle", faceAngle);
+		SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichUltrasonic));
+		SmartDashboard.putNumber("Angle Error", angleError);
+		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
+	
+		double angleError= (faceAngle - Math.abs((360 - ahrs.getYaw())%360));
+		double optimalDirection = 1;
+		if(angleError > 0){
+			directionMod = -1;
+		}
+		
+		if(Math.abs(angleError) > 180){
+			optimalDirection = -1;
+			//if(directionMod == -1){
+			angleError = (360-Math.abs(angleError))%360;
+		//	}
+		}
+		double distanceError = driveDistance - Math.cos(angleError) * currentDistanceReading;
+		if(whichUltrasonic == 1){
+			if((driveAngle-faceAngle)%360 < 180){
+			driveAngle = driveAngle - (distanceError*.0075);
+			}else{
+			driveAngle = driveAngle + (distanceError*.0075);		
+			}
+		}else if(whichUltrasonic == 2){
+			if((driveAngle-faceAngle)%360 < 180){
+				driveAngle = driveAngle + (distanceError*.0075);
+				}else{
+				driveAngle = driveAngle - (distanceError*.0075);		
+				}
+		}else{
+			if((driveAngle-faceAngle)%360 <= 270 && (driveAngle-faceAngle)%360 >= 90){
+			driveAngle = driveAngle + (distanceError*.0075);
+			}else{
+			driveAngle = driveAngle - (distanceError*.0075);		
+			}
+		}
+		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
+		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
+		//SmartDashboard.putNumber("Distance Error", distanceError);
+		System.out.println((driveAngle));
+		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
+		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
+		SmartDashboard.putNumber("Angleeel error: ", angleError);
+		SmartDashboard.putNumber("Distanceeeeec error: ", distanceError);
+		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
+		previousDistanceReading = currentDistanceReading;
+		
+	}
 	public void setDriveDistance(double distance){
 		driveDistance = distance;
-		
-		
 	}
 	public void driveXInchesFromSurface(double target,int faceAngle ,int whichUltrasonic){
 		double deltaDistance = (target - ultraSonicSensors.getDistance(whichUltrasonic));
@@ -739,15 +796,6 @@ public class SwerveControl {
 		isToPosition = false;
 		isToPositionCounter =0;
 	}
-	public void driveSidewaseXInchesFromSurface(double target, boolean leftSensor){
-		double deltaDistance;
-		//Wif(leftSensor)
-			//deltaDistance = target - leftSonic.getDistance();
-		//else
-			//deltaDistance = target - rightSonic.getDistance();
-		//this.autonomousDrive(0, 0, deltaDistance*.1, deltaDistance*.1);
-	}
-	
 	public boolean hasCollidedPositiveX(){
 		if(this.getXJerk()>100)
 			collidedPositiveX = true;

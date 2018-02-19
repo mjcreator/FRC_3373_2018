@@ -324,12 +324,8 @@ public class Robot extends TimedRobot {
 		
 		
 		//Lift Code for Actuators Moving Together
-	/*	if(shooter.getRawAxis(Rtrigger)>.1)
-			lifter.goToPosition(26.5);
-		else if(shooter.getRawAxis(Ltrigger)>.1)
-			lifter.goToPosition(3);
-		else
-			lifter.goToPosition(lifter.getPosition()); */
+		SmartDashboard.putNumber("Current", lifter.getOutputCurrent());
+		
 		
 		//Grabber Code
 		/*if(shooter.isLBHeld())
@@ -532,7 +528,7 @@ public class Robot extends TimedRobot {
 		
 		//   *_*_*_*_*_*_*_* SHARED MAIN CONTROLS *_*_*_*_*_*_*_*
 		
-		if(driver.isRStickHeld()){// && shooter.isRStickHeld()){
+		if(driver.isStartHeld() && shooter.isStartHeld()){
 		climbBar.setState(false);
 		}else{
 		climbBar.setState(true);
@@ -558,15 +554,24 @@ public class Robot extends TimedRobot {
 			swerve.isFieldCentric = false;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
 		}
-		if(driver.isRBHeld()){
+
+		
+		//   *_*_*_*_*_*_*_* SHOOTER MAIN CONTROLS *_*_*_*_*_*_*_*
+		
+		if(shooter.getRawAxis(Rtrigger)>.1)
+			lifter.goToPosition(26.5);
+		else if(shooter.getRawAxis(Ltrigger)>.1)
+			lifter.goToPosition(3);
+		else
+			lifter.goToPosition(lifter.getPosition()); 
+		
+		if(shooter.isRBHeld()){
 			grabber.importCube();
-		}else if(driver.isLBHeld()){
+		}else if(shooter.isLBHeld()){
 			grabber.exportCube();
 		}else{
 			grabber.idle();
 		}
-		
-		
 		
 		
 		

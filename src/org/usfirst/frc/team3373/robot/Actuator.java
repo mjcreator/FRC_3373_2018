@@ -37,7 +37,7 @@ public class Actuator{
 		double initialspeed = speed;
 		if(speed >0){//going towards top of travel
 			double distanceToTop = maxPot-talon1.getRawSensor();
-			speed = speed * Math.abs(distanceToTop)*.025; //set speed to be proportional to the distance from extrema
+			speed = speed * Math.abs(distanceToTop)*.0175; //set speed to be proportional to the distance from extrema
 			if(speed > initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
@@ -46,7 +46,7 @@ public class Actuator{
 			}
 		}else if(speed<0){	//going towards bottom of travel
 			double distanceToBot = talon1.getRawSensor()- minPot;
-			speed= speed * Math.abs(distanceToBot)*.025;  //set speed to be proportional to the distance from extrema
+			speed= speed * Math.abs(distanceToBot)*.0175;  //set speed to be proportional to the distance from extrema
 			if(speed < initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
@@ -82,6 +82,8 @@ public class Actuator{
 	}
 	public void setVelocity(double velocity){ //in cm per second
 		double error = velocity - this.getVelocity(); 
-		
+	}
+	public double getOutputCurrent(){
+		return (talon1.getOutputCurrent() + talon2.getOutputCurrent())/2;
 	}
 }
