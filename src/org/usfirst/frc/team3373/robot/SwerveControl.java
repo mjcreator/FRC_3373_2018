@@ -51,6 +51,7 @@ public class SwerveControl {
 	int integralGainsDriveCounter;
 	int spinAngleCounter = 0;
 	public UltraSonics ultraSonicSensors;
+	public Vision vision;
 	//Ultrasonic leftSonic;
 	//Ultrasonic rightSonic;
 	public AHRS ahrs;
@@ -90,6 +91,7 @@ public class SwerveControl {
 		wheelArray1 = new SwerveWheel[] { LFWheel, RBWheel };
 		wheelArray2 = new SwerveWheel[] { LBWheel, RFWheel };
 		ahrs = new AHRS(SPI.Port.kMXP);
+		vision = new Vision();
 		previousAccelerationX = ahrs.getWorldLinearAccelX();
 		previousAccelerationY = ahrs.getWorldLinearAccelY();
 		previousAccelerationZ = ahrs.getWorldLinearAccelZ();
@@ -750,6 +752,17 @@ public class SwerveControl {
 		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 		previousDistanceReading = currentDistanceReading;
 		
+	}
+	public void driveToTape(double driveAngle, double faceAngle, int whichCamera){
+		double tapeOffset = 0;
+		vision.switchCamera(whichCamera);
+		VisionObject visionObject = vision.getClosestObject(3);
+		if(!(visionObject == null)){
+		tapeOffset = (visionObject.X * -1) * 10;
+		}else{
+		tapeOffset = 0;
+		}
+		autonomousDrive(driveAngle + tapeOffset, faceAngle);
 	}
 	public void setDriveDistance(double distance){
 		driveDistance = distance;
