@@ -184,13 +184,13 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		robotCounter = 0;
 		
-		positionalOnes = new DigitalInput(0);
-		positionalTwos = new DigitalInput(1);
-		positionalFours = new DigitalInput(2);
+		positionalOnes = new DigitalInput(3);
+		positionalTwos = new DigitalInput(2);
+		positionalFours = new DigitalInput(1);
 		
-		programOnes = new DigitalInput(3);
-		programTwos = new DigitalInput(4);
-		programFours = new DigitalInput(5);
+		programOnes = new DigitalInput(7);
+		programTwos = new DigitalInput(6);
+		programFours = new DigitalInput(4);
 		
 		
 
@@ -523,16 +523,16 @@ public class Robot extends TimedRobot {
 		swerve.setPID();
 		climbBar.controlDropBar();
 		
-		positionalIndex = 0;
+		positionalIndex = 7;
 		
 		if (positionalOnes.get()) {
-			positionalIndex += 1;
+			positionalIndex -= 1;
 		}
 		if (positionalTwos.get()) {
-			positionalIndex += 2;
+			positionalIndex -= 2;
 		}
 		if (positionalFours.get()) {
-			positionalIndex += 4;
+			positionalIndex -= 4;
 		}
 		if (positionalIndex == 8) {
 			positionalIndex = 0;
@@ -552,6 +552,9 @@ public class Robot extends TimedRobot {
 		if (programIndex == 8) {
 			programIndex = 0;
 		}
+		
+		SmartDashboard.putNumber("Pos Index: " , positionalIndex);
+		SmartDashboard.putNumber("Pro Index: ", programIndex);
 		
 		//System.out.println("Dial 1: " + positionalIndex);
 		//System.out.println("Dial 1: " + programIndex);
