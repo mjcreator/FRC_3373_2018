@@ -19,6 +19,7 @@ public class Auto_1_0 {
 	boolean isAtDistance2;
 	int driveTimer = 0;
 	int ejectTimer = 0;
+	int shakeCounter = 0;
 	public Auto_1_0(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean isScaleLeft){
 		swerve = swerveDrive;
 		lifter = actuators;
@@ -29,12 +30,16 @@ public class Auto_1_0 {
 		}
 		
 	public void run(){
+		shakeCounter++;
 		swerve.setStartOffset(-90);
 		swerve.setAutonomousOffset(0);
 		System.out.println("run");
 		
-		
-		if(isLeft){ //If scale is left
+		if(shakeCounter < 25){
+			swerve.calculateSwerveControl(1, 0, 0);
+		}else if(shakeCounter < 50){
+			swerve.calculateSwerveControl(-1, 0, 0);
+		}else if(isLeft){ //If scale is left
 			if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
 				swerve.autonomousDrive(180, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
 				lifter.goToPosition(24);
@@ -121,6 +126,8 @@ public class Auto_1_0 {
 			}else if(!swerve.hasHitBump()){
 				swerve.setDriveDistance(21.5);
 				swerve.autonomousDrive(180, 180, 1, 1, 3);
+				lifter.goToPosition(24);
+				lifter.resetIsToPosition();
 				swerve.resetIsToDistance();
 			}else if(!toDistance3R || !hasRisen){
 				swerve.driveXInchesFromSurface(21.5, 180, 3);
