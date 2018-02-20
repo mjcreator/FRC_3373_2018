@@ -47,12 +47,14 @@ public class Robot extends TimedRobot {
 	int BREncoderCalibMin = 300;
 	int BREncoderCalibMax = 300;
 	
-	double robotWidth = 21.125; //TODO change robot dimensions to match this years robot
-	double robotLength = 33.5;
+/*	double robotWidth = 22.75; //TODO change robot dimensions to match this years robot
+	double robotLength = 27.375;*/
+	double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
+	double robotLength = 26.8125;
 
 
-	int LBdriveChannel = 1;
-	int LBrotateID = 2;
+/*	int LBdriveChannel = 2;
+	int LBrotateID = 1;
 	int LBencOffset = 420; // Zero values (value when wheel is turned to default
 							// zero- bolt hole facing front.)
 	int LBEncMin = 10;
@@ -78,22 +80,52 @@ public class Robot extends TimedRobot {
 	int RFencOffset = 212;
 	int RFEncMin = 11;
 	int RFEncMax = 895;
+	double RFWheelMod = .8922;*/
+	
+	int LBdriveChannel = 2;
+	int LBrotateID = 1;
+	int LBencOffset = 590; // Zero values (value when wheel is turned to default
+							// zero- bolt hole facing front.)
+	int LBEncMin = 10;
+	int LBEncMax = 879;
+	double LBWheelMod = 1; //Modifier for wheel speed
+
+	int LFdriveChannel = 4;
+	int LFrotateID = 3;
+	int LFencOffset = 602;
+	int LFEncMin = 11;
+	int LFEncMax = 889;
+	double LFWheelMod = 1;
+
+	int RBdriveChannel = 8;
+	int RBrotateID = 7;
+	int RBencOffset = 333;
+	int RBEncMin = 11;
+	int RBEncMax = 987;
+	double RBWheelMod = .95;
+
+	int RFdriveChannel = 6;
+	int RFrotateID = 5;
+	int RFencOffset = 628;
+	int RFEncMin = 10;
+	int RFEncMax = 889;
 	double RFWheelMod = .8922;
 	
-	int leftUltraSonicPort =1;
-	int rightUltraSonicPort = 2;
-	int backUltraSonicPort = 3;
+	
+	int leftUltraSonicPort =0;
+	int rightUltraSonicPort = 1;
+	int backUltraSonicPort = 2;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
-	static int actuator1Port1 = 7;
-	static int actuator1Port2 = 8;
-	static int actuator2Port1 = 10;
-	static int actuator2Port2 = 9;
-	static double minPot1 = 97;
-	static double minPot2 = 95;
-	static double maxPot1 = 725;
-	static double maxPot2 = 726;
+	static int actuator1Port1 = 9; //left
+	static int actuator1Port2 = 10;//right
+	static int actuator2Port1 = 11;
+	static int actuator2Port2 = 12;
+	static double minPot1 = 101;
+	static double minPot2 = 99;
+	static double maxPot1 = 729;
+	static double maxPot2 = 729;
 	static double minDistance1 = 2;
 	static double minDistance2 = 2;
 	static double maxDistance1 = 26.5;
@@ -109,7 +141,7 @@ public class Robot extends TimedRobot {
 	
 	//Grabber Initialization
 	int grabberPort1 =0; // Need to updtate for the Robot
-	int grabberPort2 =0;
+	int grabberPort2 =1;
 	Grabber grabber;
 	
 	
@@ -130,6 +162,8 @@ public class Robot extends TimedRobot {
 	
 	SuperJoystick driver;
 	SuperJoystick shooter;
+	
+	ClimbBar climbBar;
 	
 	int positionalIndex = 1;// for testing purposes
 	int programIndex = 1;// for testing purposes
@@ -207,6 +241,7 @@ public class Robot extends TimedRobot {
 		driver = new SuperJoystick(0);
 		shooter = new SuperJoystick(1);
 		grabber = new Grabber(grabberPort1,grabberPort2);
+		climbBar = new ClimbBar(2);
 		
 		xJerkMax = 0;
 		yJerkMax = 0;
@@ -233,7 +268,7 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 		autoController = new AutonomousControl(positionalIndex, programIndex, swerve, lifter, grabber);
 		swerve.ahrs.reset();
-		swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(3));
+		swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(1));
 
 	}
 
@@ -261,11 +296,15 @@ public class Robot extends TimedRobot {
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
-		//swerve.autonomousDrive(180, 90, 1, 1, 1);
-		
+		//swerve.autonomousDrive(270, 90, 1, 1,1);
 		autoController.activateAuto();
 	}
 
+	
+	
+	public void teleopInit(){
+		swerve.activateStartOffset();
+	}
 	/**
 	 * This function is called periodically during operator control.
 	 */
@@ -285,12 +324,8 @@ public class Robot extends TimedRobot {
 		
 		
 		//Lift Code for Actuators Moving Together
-	/*	if(shooter.getRawAxis(Rtrigger)>.1)
-			lifter.goToPosition(26.5);
-		else if(shooter.getRawAxis(Ltrigger)>.1)
-			lifter.goToPosition(3);
-		else
-			lifter.goToPosition(lifter.getPosition()); */
+		SmartDashboard.putNumber("Current", lifter.getOutputCurrent());
+		
 		
 		//Grabber Code
 		/*if(shooter.isLBHeld())
@@ -359,10 +394,11 @@ public class Robot extends TimedRobot {
 			SmartDashboard.putNumber("Z-Jerk: ", currentZJerk);
 			SmartDashboard.putNumber("X-Jerk", currentXJerk);
 			SmartDashboard.putNumber("Y-Jerk", currentYJerk);
+			
 			if(Math.abs(currentZJerk) > 250){
 				swerve.hasBumped = true;
 			}
-			if(Math.abs(currentXJerk) > 80){
+			if(Math.abs(currentXJerk) > 100){
 				swerve.collidedPositiveX = true;
 			}
 			
@@ -417,6 +453,8 @@ public class Robot extends TimedRobot {
 			calibrateSwerve();
 			break;
 		}
+		calibrateSwerve();
+	//	grabber.exportCube();
 		
 		
 		/*actuators.calibrate(shooter, false);
@@ -484,10 +522,17 @@ public class Robot extends TimedRobot {
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.setPID();
+		climbBar.controlDropBar();
 		
 		SmartDashboard.putNumber("Navx", swerve.ahrs.getYaw());
 		
+		//   *_*_*_*_*_*_*_* SHARED MAIN CONTROLS *_*_*_*_*_*_*_*
 		
+		if(driver.isStartHeld() && shooter.isStartHeld()){
+		climbBar.setState(false);
+		}else{
+		climbBar.setState(true);
+		}
 		
 		
 		//   *_*_*_*_*_*_*_* DRIVER MAIN CONTROLS *_*_*_*_*_*_*_*
@@ -499,7 +544,6 @@ public class Robot extends TimedRobot {
 		} else {
 			swerve.normalSpeed();
 		}
-		if(!swerve.hasBumped && !swerve.hasCollidedPositiveX()){
 		if (driver.getRawAxis(Rtrigger) > .1) {
 			swerve.isFieldCentric = true;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
@@ -510,9 +554,23 @@ public class Robot extends TimedRobot {
 			swerve.isFieldCentric = false;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
 		}
-		}
-		else{
-			swerve.calculateSwerveControl(0, 0, 0);
+
+		
+		//   *_*_*_*_*_*_*_* SHOOTER MAIN CONTROLS *_*_*_*_*_*_*_*
+		
+		if(shooter.getRawAxis(Rtrigger)>.1)
+			lifter.goToPosition(26.5);
+		else if(shooter.getRawAxis(Ltrigger)>.1)
+			lifter.goToPosition(3);
+		else
+			lifter.goToPosition(lifter.getPosition()); 
+		
+		if(shooter.isRBHeld()){
+			grabber.importCube();
+		}else if(shooter.isLBHeld()){
+			grabber.exportCube();
+		}else{
+			grabber.idle();
 		}
 		
 		
