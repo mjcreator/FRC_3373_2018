@@ -8,6 +8,9 @@ public class VisionObject {
 		this.Y=positionY;
 		this.distance=distance;
 	}
+	public void print(){
+		System.out.println(id+": "+score+"% at ("+X+","+Y+") "+distance+"in.");
+	}
 	
 	public int id;
 	public int score;
