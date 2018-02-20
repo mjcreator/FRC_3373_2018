@@ -789,10 +789,65 @@ public class SwerveControl {
 		if(isToPositionCounter > 5)
 			isToPosition = true;
 	}
+	public void driveXInchesFromSurface(double target,int faceAngle ,int directionalUltrasonic, boolean crossingCubes, int wallUltrasonic){
+		double deltaDistance = (target - ultraSonicSensors.getDistance(directionalUltrasonic));
+		double direction =  deltaDistance/Math.abs(deltaDistance);
+		double motorPower = Math.sqrt(Math.sqrt(Math.abs(deltaDistance)))*.23;
+		if(motorPower > 1){
+			motorPower =1;
+		}
+		if(motorPower < -1){
+			motorPower=-1;
+		}
+		if(!crossingCubes){
+		if(directionalUltrasonic == 1){
+			if(direction >0)
+				this.autonomousDrive(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+			else
+				this.autonomousDrive(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+		}else if(directionalUltrasonic ==2){
+			if(direction <0)
+				this.autonomousDrive(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+			else
+				this.autonomousDrive(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+		}
+		else{
+			if(direction >0)
+				this.autonomousDrive(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+			else
+				this.autonomousDrive(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+		}
+		}else{
+			if(directionalUltrasonic == 1){
+				if(direction >0)
+					this.autonomousDriveCrossingOver(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+				else
+					this.autonomousDriveCrossingOver(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+			}else if(directionalUltrasonic ==2){
+				if(direction <0)
+					this.autonomousDriveCrossingOver(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+				else
+					this.autonomousDriveCrossingOver(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+			}
+			else{
+				if(direction >0)
+					this.autonomousDriveCrossingOver(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+				else
+					this.autonomousDriveCrossingOver(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+			}
+		}
+		if(Math.abs(deltaDistance) < 3)
+			isToPositionCounter++;
+		else{
+			isToPositionCounter = 0;
+		}
+		if(isToPositionCounter > 5)
+			isToPosition = true;
+	}
 	public boolean isToDistanceFromWall(){
 		return isToPosition;
 	}
-	public void resetisToDistance(){
+	public void resetIsToDistance(){
 		isToPosition = false;
 		isToPositionCounter =0;
 	}

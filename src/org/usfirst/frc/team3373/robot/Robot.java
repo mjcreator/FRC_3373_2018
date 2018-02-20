@@ -112,9 +112,9 @@ public class Robot extends TimedRobot {
 	double RFWheelMod = .8922;
 	
 	
-	int leftUltraSonicPort =0;
+	int leftUltraSonicPort =2;
 	int rightUltraSonicPort = 1;
-	int backUltraSonicPort = 2;
+	int backUltraSonicPort = 0;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
@@ -193,7 +193,7 @@ public class Robot extends TimedRobot {
 		programFours = new DigitalInput(5);
 		
 		
-		
+
 
 		if (positionalOnes.get()) {
 			positionalIndex += 1;
@@ -268,7 +268,7 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 		autoController = new AutonomousControl(positionalIndex, programIndex, swerve, lifter, grabber);
 		swerve.ahrs.reset();
-		swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(1));
+	//	swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(1));
 
 	}
 
@@ -296,7 +296,7 @@ public class Robot extends TimedRobot {
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
-		//swerve.autonomousDrive(270, 90, 1, 1,1);
+		//swerve.driveXInchesFromSurface(21.5, 0, 3);
 		autoController.activateAuto();
 	}
 
@@ -314,7 +314,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("Roll", swerve.ahrs.getRoll());
 		swerve.setAutonomousBoolean(false);
 		this.activateControl();
-		
+
 		
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
@@ -324,7 +324,7 @@ public class Robot extends TimedRobot {
 		
 		
 		//Lift Code for Actuators Moving Together
-		SmartDashboard.putNumber("Current", lifter.getOutputCurrent());
+		//SmartDashboard.putNumber("Current", lifter.getOutputCurrent());
 		
 		
 		//Grabber Code
@@ -453,7 +453,6 @@ public class Robot extends TimedRobot {
 			calibrateSwerve();
 			break;
 		}
-		calibrateSwerve();
 	//	grabber.exportCube();
 		
 		
@@ -524,6 +523,39 @@ public class Robot extends TimedRobot {
 		swerve.setPID();
 		climbBar.controlDropBar();
 		
+		positionalIndex = 0;
+		
+		if (positionalOnes.get()) {
+			positionalIndex += 1;
+		}
+		if (positionalTwos.get()) {
+			positionalIndex += 2;
+		}
+		if (positionalFours.get()) {
+			positionalIndex += 4;
+		}
+		if (positionalIndex == 8) {
+			positionalIndex = 0;
+		}
+		
+		programIndex = 0;
+
+		if (programOnes.get()) {
+			programIndex += 1;
+		}
+		if (programTwos.get()) {
+			programIndex += 2;
+		}
+		if (programFours.get()) {
+			programIndex += 4;
+		}
+		if (programIndex == 8) {
+			programIndex = 0;
+		}
+		
+		//System.out.println("Dial 1: " + positionalIndex);
+		//System.out.println("Dial 1: " + programIndex);
+		
 		SmartDashboard.putNumber("Navx", swerve.ahrs.getYaw());
 		
 		//   *_*_*_*_*_*_*_* SHARED MAIN CONTROLS *_*_*_*_*_*_*_*
@@ -546,22 +578,22 @@ public class Robot extends TimedRobot {
 		}
 		if (driver.getRawAxis(Rtrigger) > .1) {
 			swerve.isFieldCentric = true;
-			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), Math.pow(driver.getRawAxis(RX),3));
 		}/* else if (driver.getRawAxis(Ltrigger) > .1) {
 			swerve.isFieldCentric = false;
 			swerve.calculateObjectControl(driver.getRawAxis(RX));
 		}*/ else {
 			swerve.isFieldCentric = false;
-			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), Math.pow(driver.getRawAxis(RX),3));
 		}
 
 		
 		//   *_*_*_*_*_*_*_* SHOOTER MAIN CONTROLS *_*_*_*_*_*_*_*
-		
-		if(shooter.getRawAxis(Rtrigger)>.1)
+		SmartDashboard.putNumber("Actuator Position", lifter.getPosition());
+		if(shooter.getRawAxis(Ltrigger)>.1)
 			lifter.goToPosition(26.5);
-		else if(shooter.getRawAxis(Ltrigger)>.1)
-			lifter.goToPosition(3);
+		else if(shooter.getRawAxis(Rtrigger)>.1)
+			lifter.goToPosition(2);
 		else
 			lifter.goToPosition(lifter.getPosition()); 
 		
@@ -571,6 +603,9 @@ public class Robot extends TimedRobot {
 			grabber.exportCube();
 		}else{
 			grabber.idle();
+		}
+		if(shooter.isBackHeld()){
+			lifter.setMaxSpeed(1);
 		}
 		
 		

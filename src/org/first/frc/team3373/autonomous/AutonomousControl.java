@@ -56,8 +56,8 @@ public class AutonomousControl {
 	
 	public void activateAuto(){
 		swerve.setAutonomousOffset(90);
-		
-		switch (positionalID) {
+		auto_1_1.run();
+	/*	switch (positionalID) {
 		case 0:
 			driveStraight.run();
 			
@@ -234,7 +234,7 @@ public class AutonomousControl {
 			
 
 			break;
-	}
+	}*/
 	
 	}
 	

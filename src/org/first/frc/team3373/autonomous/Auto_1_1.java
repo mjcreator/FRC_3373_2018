@@ -11,6 +11,8 @@ public class Auto_1_1 {
 	Grabber grabber;
 	boolean isLeft;
 	boolean hasRisen;
+	boolean isAtDistance1;
+	boolean isAtDistance2;
 	int ejectTimer = 0;
 	public Auto_1_1(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean isScaleLeft){
 		swerve = swerveDrive;
@@ -22,34 +24,56 @@ public class Auto_1_1 {
 	public void run(){
 		swerve.setStartOffset(-90);
 		swerve.setAutonomousOffset(0);
+		swerve.setDriveDistance(20);
 		System.out.println("run");
 		
 		
 		if(isLeft){ //If scale is left
 			if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
-				swerve.autonomousDrive(90, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
+				swerve.autonomousDrive(180, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
+				lifter.goToPosition(24);
 			}else{//  robot has hit the bump
-				if(!swerve.isToDistanceFromWall()){
+				if(!isAtDistance1){
 					swerve.driveXInchesFromSurface(21.5, 0, 3);
+					if(swerve.isToDistanceFromWall()){
+						isAtDistance1 = true;
+					}
 				}else{
-				swerve.calculateSwerveControl(0, 0, 0);
 				if(!hasRisen){
-				//lifter.goToPosition(upPosition);
+				swerve.calculateSwerveControl(0, 0, 0);
+				lifter.goToPosition(2);
 				if(lifter.isToPosition()){
 					hasRisen = true;
+					swerve.resetIsToDistance();
 				}
 				}else{
-				if(ejectTimer < 100){
-					grabber.exportCube();
-					ejectTimer++;
-					lifter.resetIsToPosition();
-				}else{
-					if(!lifter.isToPosition()){
-						//lifter.goToPosition(downPosition);
+					if(!isAtDistance2){
+						swerve.driveXInchesFromSurface(39.5, 0, 3);
+						if(swerve.isToDistanceFromWall()){
+							isAtDistance2 = true;
+						}
+					}else{
+						if(ejectTimer < 100){
+							grabber.exportCube();
+							ejectTimer++;
+							lifter.resetIsToPosition();
+							swerve.resetIsToDistance();
+						}else{
+							if(!swerve.isToDistanceFromWall()){
+								swerve.driveXInchesFromSurface(21.5, 0, 3);
+							}else{
+							
+							
+							if(!lifter.isToPosition()){
+								lifter.goToPosition(26.5);
+							}
+							}
+							
+							
+						}
 					}
 					
-					
-				}
+
 					
 					
 					

@@ -11,12 +11,21 @@ public class Auto_1_0 {
 	Grabber grabber;
 	boolean isLeft;
 	boolean hasRisen;
+	boolean toDistance1R;
+	boolean toDistance2R;
+	boolean toDistance3R;
+	boolean toRotate1R;
+	boolean isAtDistance1;
+	boolean isAtDistance2;
+	int driveTimer = 0;
 	int ejectTimer = 0;
 	public Auto_1_0(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean isScaleLeft){
 		swerve = swerveDrive;
 		lifter = actuators;
 		grabber = cubeGrabber;
 		isLeft= isScaleLeft;
+		toDistance1R = false;
+		toRotate1R = false;
 		}
 		
 	public void run(){
@@ -27,29 +36,50 @@ public class Auto_1_0 {
 		
 		if(isLeft){ //If scale is left
 			if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
-				swerve.autonomousDrive(90, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
+				swerve.autonomousDrive(180, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
+				lifter.goToPosition(24);
 			}else{//  robot has hit the bump
-				if(!swerve.isToDistanceFromWall()){
+				if(!isAtDistance1){
 					swerve.driveXInchesFromSurface(21.5, 0, 3);
+					if(swerve.isToDistanceFromWall()){
+						isAtDistance1 = true;
+					}
 				}else{
-				swerve.calculateSwerveControl(0, 0, 0);
 				if(!hasRisen){
-			//	lifter.goToPosition(upPosition);
+				swerve.calculateSwerveControl(0, 0, 0);
+				lifter.goToPosition(2);
 				if(lifter.isToPosition()){
 					hasRisen = true;
+					swerve.resetIsToDistance();
 				}
 				}else{
-				if(ejectTimer < 100){
-					grabber.exportCube();
-					ejectTimer++;
-					lifter.resetIsToPosition();
-				}else{
-					if(!lifter.isToPosition()){
-			//			lifter.goToPosition(downPosition);
+					if(!isAtDistance2){
+						swerve.driveXInchesFromSurface(39.5, 0, 3);
+						if(swerve.isToDistanceFromWall()){
+							isAtDistance2 = true;
+						}
+					}else{
+						if(ejectTimer < 100){
+							grabber.exportCube();
+							ejectTimer++;
+							lifter.resetIsToPosition();
+							swerve.resetIsToDistance();
+						}else{
+							if(!swerve.isToDistanceFromWall()){
+								swerve.driveXInchesFromSurface(21.5, 0, 3);
+							}else{
+							
+							
+							if(!lifter.isToPosition()){
+								lifter.goToPosition(26.5);
+							}
+							}
+							
+							
+						}
 					}
 					
-					
-				}
+
 					
 					
 					
@@ -67,15 +97,49 @@ public class Auto_1_0 {
 			
 			
 			
-			
 		}else{
-			if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
-				swerve.driveXInchesFromSurface(175, 0, 2);
+			if(!toDistance1R){
+				swerve.driveXInchesFromSurface(175, 0, 2, false, 3);
+				if(swerve.isToDistanceFromWall()){
+					toDistance1R = true;
+					swerve.setSpinAngle(180);
+				}
+			}else if(!toRotate1R){
+				swerve.spinToXdegrees();
+				if(swerve.isAtSpinAngle())
+					toRotate1R = true;
+			}else if(driveTimer < 100){
+				swerve.autonomousDrive(180, 180);
+				driveTimer++;
+			}else if(!toDistance2R){
+				swerve.setDriveDistance(20);
+				swerve.driveXInchesFromSurface(21.5, 180, 3, true, 1);
+				swerve.resetBump();
+				if(swerve.isToDistanceFromWall()){
+					toDistance2R = true;
+				}
+			}else if(!swerve.hasHitBump()){
+				swerve.setDriveDistance(21.5);
+				swerve.autonomousDrive(180, 180, 1, 1, 3);
+				swerve.resetIsToDistance();
+			}else if(!toDistance3R || !hasRisen){
+				swerve.driveXInchesFromSurface(21.5, 180, 3);
+				if(swerve.isToDistanceFromWall()){
+					toDistance3R = true;
+				}
+				lifter.goToPosition(2);
+				if(lifter.isToPosition()){
+					hasRisen = true;
+				}
+			}else if(ejectTimer < 100){
+				grabber.exportCube();
+				swerve.resetIsToDistance();
+				lifter.resetIsToPosition();
+			}else if(!swerve.isToDistanceFromWall()){
+				swerve.driveXInchesFromSurface(21.5, 180, 3);
 			}else{
-				swerve.calculateSwerveControl(0, 0, 0);
-			} 
-			
-			
+				lifter.goToPosition(26.5);
+			}
 		}
 	}
 

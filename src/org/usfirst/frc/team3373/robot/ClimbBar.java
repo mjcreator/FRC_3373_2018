@@ -19,7 +19,7 @@ public class ClimbBar {
 	
 	public void controlDropBar(){
 		SmartDashboard.putBoolean("HELDUP!: ", heldUp);
-		System.out.println(solenoid.get());
+		//System.out.println(solenoid.get());
 		if(heldUp == true){
 			solenoid.set(Relay.Value.kReverse);
 		}else{
