@@ -115,6 +115,7 @@ public class Auto_1_0 {
 					toRotate1R = true;
 			}else if(driveTimer < 100){
 				swerve.autonomousDrive(180, 180);
+				swerve.resetIsToDistance();
 				driveTimer++;
 			}else if(!toDistance2R){
 				swerve.setDriveDistance(20);
@@ -138,7 +139,7 @@ public class Auto_1_0 {
 				if(lifter.isToPosition()){
 					hasRisen = true;
 				}
-			}else if(ejectTimer < 100){
+			}else if(ejectTimer < 25){
 				grabber.exportCube();
 				swerve.resetIsToDistance();
 				lifter.resetIsToPosition();

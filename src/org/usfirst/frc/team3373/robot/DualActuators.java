@@ -41,8 +41,8 @@ public class DualActuators {
 		//double deltaPositions = deltaPosition1 - deltaPosition2; // The Difference between the distance from each Target
 		double deltaPositions = actuator1.getPosition() - actuator2.getPosition();
 		SmartDashboard.putNumber("DeltaPositions", deltaPositions); 
-		double speed1 = .075*deltaPosition1 + .001*integralCounter*deltaPosition1; // sets the speed to be proportional to the Distance form target
-		double speed2 = .075*deltaPosition2 + .001*integralCounter*deltaPosition2; // As it approaches target, it decelerates
+		double speed1 = .05*deltaPosition1 + .001*integralCounter*deltaPosition1; // sets the speed to be proportional to the Distance form target
+		double speed2 = .05*deltaPosition2 + .001*integralCounter*deltaPosition2; // As it approaches target, it decelerates
 		if(speed1 <0){ // actuator going down --> going up on lift
 			direction = -1;
 			if(this.getOutputCurrent()>30){
@@ -50,8 +50,10 @@ public class DualActuators {
 			}else if(this.getOutputCurrent() > 15){
 				this.setMaxSpeed(.8);
 			}
-			else{
+			else if(this.getOutputCurrent() > 7.5){
 				this.setMaxSpeed(.6);
+			}else{
+				this.setMaxSpeed(.4);
 			}
 		}
 		else{ //actuator going up --> going down on lift
@@ -99,7 +101,7 @@ public class DualActuators {
 		
 		actuator1.set(speed1); //Sets the actuators speeds
 		actuator2.set(speed2);
-		if(this.getPosition()>25 || this.getPosition()<3)
+		if(Math.abs(deltaPosition1) <1 && Math.abs(deltaPosition2) <1)
 		integralCounter++;
 		else{
 			integralCounter = 0;

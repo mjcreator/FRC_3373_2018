@@ -8,6 +8,7 @@ public class Actuator{
 	private double minPot;
 	private double maxDistance;
 	private double minDistance;
+	private boolean toExtreme;
 	SupremeTalon talon1;
 	SupremeTalon talon2;
 	public Actuator(int port1,int port2,double maxPot1, double minPot1, double maxTravel, double minTravel){
@@ -21,6 +22,7 @@ public class Actuator{
 		maxDistance = maxTravel; // Distance is in Centimeters
 		minDistance = minTravel;
 		position1 = this.getPosition();
+		toExtreme = false;
 		}
 	public double getPosition(){
 		//returns the distance in centimeters
@@ -36,27 +38,32 @@ public class Actuator{
 	public void set(double speed){
 		double initialspeed = speed;
 		if(speed >0){//going towards top of travel
+			toExtreme = false;
 			double distanceToTop = maxPot-talon1.getRawSensor();
-			speed = speed * Math.abs(distanceToTop)*.0225; //set speed to be proportional to the distance from extrema
+			speed = speed * Math.abs(distanceToTop)*.0175; //set speed to be proportional to the distance from extrema
 			if(speed > initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
 			if((talon1.getRawSensor()>maxPot)){ //final fail safe for if the actuator exceeds the travel 
-				speed = 0;
+				this.superSet(0);
+				toExtreme = true;
 			}
 		}else if(speed<0){	//going towards bottom of travel
+			toExtreme = false;
 			double distanceToBot = talon1.getRawSensor()- minPot;
-			speed= speed * Math.abs(distanceToBot)*.0225;  //set speed to be proportional to the distance from extrema
+			speed= speed * Math.abs(distanceToBot)*.0175;  //set speed to be proportional to the distance from extrema
 			if(speed < initialspeed){ //makes sure the magnitude of the velocity is not greater than the passed in velocity
 				speed = initialspeed;
 			}
 			if((talon1.getRawSensor()<minPot)){
-				speed = 0;
+				this.superSet(0);
+				toExtreme = true;
 			}
 		}
-			talon1.accelerate(speed, .05, false);
-			talon2.accelerate(speed, .05, false);
-		
+			if(!toExtreme){
+				talon1.accelerate(speed, .05, false);
+				talon2.accelerate(speed, .05, false);
+			}
 	}
 	public void superSet(double speed){
 		talon1.set(speed);
