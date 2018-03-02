@@ -209,7 +209,8 @@ public class SwerveControl {
 			RX = 0;
 		}
 		if (isFieldCentric) {
-			orientationOffset = ahrs.getYaw() + startOffset; // if in field centric mode make
+			
+			orientationOffset = ahrs.getYaw()- 90 + startOffset + 180; // if in field centric mode make
 												// offset equal to the current
 												// angle of the navX
 		} else {
@@ -770,7 +771,7 @@ public class SwerveControl {
 	public void driveXInchesFromSurface(double target,int faceAngle ,int whichUltrasonic){
 		double deltaDistance = (target - ultraSonicSensors.getDistance(whichUltrasonic));
 		double direction =  deltaDistance/Math.abs(deltaDistance);
-		double motorPower = Math.sqrt(Math.sqrt(Math.abs(deltaDistance)))*.23;
+		double motorPower = Math.sqrt((Math.abs(deltaDistance)))*.1;
 		if(motorPower > 1){
 			motorPower =1;
 		}
@@ -779,20 +780,20 @@ public class SwerveControl {
 		}
 		if(whichUltrasonic == 1){
 			if(direction >0)
-				this.autonomousDrive(0,faceAngle, motorPower, motorPower);
+				this.autonomousDrive(faceAngle +270,faceAngle, motorPower, motorPower);
 			else
-				this.autonomousDrive(180,faceAngle, motorPower, motorPower);
+				this.autonomousDrive(faceAngle+90,faceAngle, motorPower, motorPower);
 		}else if(whichUltrasonic ==2){
 			if(direction <0)
-				this.autonomousDrive(0,faceAngle, motorPower, motorPower);
+				this.autonomousDrive(faceAngle+90,faceAngle, motorPower, motorPower);
 			else
-				this.autonomousDrive(180,faceAngle, motorPower, motorPower);
+				this.autonomousDrive(faceAngle +270,faceAngle, motorPower, motorPower);
 		}
 		else{
 			if(direction >0)
-				this.autonomousDrive(90,faceAngle, motorPower, motorPower);
+				this.autonomousDrive(faceAngle,faceAngle, motorPower, motorPower);
 			else
-				this.autonomousDrive(270,faceAngle, motorPower, motorPower);
+				this.autonomousDrive(faceAngle+180,faceAngle, motorPower, motorPower);
 		}
 		if(Math.abs(deltaDistance) < 3)
 			isToPositionCounter++;
@@ -805,7 +806,7 @@ public class SwerveControl {
 	public void driveXInchesFromSurface(double target,int faceAngle ,int directionalUltrasonic, boolean crossingCubes, int wallUltrasonic){
 		double deltaDistance = (target - ultraSonicSensors.getDistance(directionalUltrasonic));
 		double direction =  deltaDistance/Math.abs(deltaDistance);
-		double motorPower = Math.sqrt(Math.sqrt(Math.abs(deltaDistance)))*.23;
+		double motorPower = Math.sqrt((Math.abs(deltaDistance)))*.1;
 		if(motorPower > 1){
 			motorPower =1;
 		}
@@ -815,40 +816,42 @@ public class SwerveControl {
 		if(!crossingCubes){
 		if(directionalUltrasonic == 1){
 			if(direction >0)
-				this.autonomousDrive(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(270,faceAngle, motorPower, motorPower, wallUltrasonic);
 			else
-				this.autonomousDrive(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(90,faceAngle, motorPower, motorPower, wallUltrasonic);
 		}else if(directionalUltrasonic ==2){
 			if(direction <0)
-				this.autonomousDrive(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(270,faceAngle, motorPower, motorPower, wallUltrasonic);
 			else
-				this.autonomousDrive(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(90,faceAngle, motorPower, motorPower, wallUltrasonic);
 		}
 		else{
 			if(direction >0)
-				this.autonomousDrive(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(0,faceAngle, motorPower, motorPower, wallUltrasonic);
 			else
-				this.autonomousDrive(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(180,faceAngle, motorPower, motorPower, wallUltrasonic);
 		}
 		}else{
 			if(directionalUltrasonic == 1){
 				if(direction >0)
-					this.autonomousDriveCrossingOver(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(270,faceAngle, motorPower, motorPower, wallUltrasonic);
 				else
-					this.autonomousDriveCrossingOver(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(90,faceAngle, motorPower, motorPower, wallUltrasonic);
 			}else if(directionalUltrasonic ==2){
 				if(direction <0)
-					this.autonomousDriveCrossingOver(0,faceAngle, motorPower, motorPower, wallUltrasonic);
-				else
-					this.autonomousDriveCrossingOver(180,faceAngle, motorPower, motorPower, wallUltrasonic);
-			}
-			else{
-				if(direction >0)
 					this.autonomousDriveCrossingOver(90,faceAngle, motorPower, motorPower, wallUltrasonic);
 				else
 					this.autonomousDriveCrossingOver(270,faceAngle, motorPower, motorPower, wallUltrasonic);
 			}
+			else{
+				if(direction >0)
+					this.autonomousDriveCrossingOver(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+				else
+					this.autonomousDriveCrossingOver(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+			}
 		}
+		SmartDashboard.putNumber("Pos Counter: ", isToPositionCounter);
+		SmartDashboard.putNumber("Right Ultrasonic DIS" , ultraSonicSensors.getRawDistance(2));
 		if(Math.abs(deltaDistance) < 3)
 			isToPositionCounter++;
 		else{

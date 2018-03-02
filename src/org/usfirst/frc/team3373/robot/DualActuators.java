@@ -7,9 +7,11 @@ public class DualActuators {
 	Actuator actuator2;
 	private double maxSpeed;
 	private double previousPosition;
-	private double target;
 	private boolean isToPosition;
 	private int integralCounter;
+	private int previousDirection;
+	private double previousTarget;
+	private double proportional;
 	
 	public DualActuators(int port1, int port2, int port3, int port4,double maxPot1,double maxPot2, double minPot1, double minPot2,
 			double maxDistance1,double maxDistance2,double minDistance1,double minDistance2){
@@ -19,53 +21,64 @@ public class DualActuators {
 		maxSpeed= .6;
 		integralCounter = 0;
 		isToPosition = false;
+		previousDirection = 1;
+		previousTarget = 0;
+		proportional = .05;
 	}
-	public void goToPosition(double position){
+	public void goToPosition(double target){
 		if(isToPosition){
 			integralCounter = 0;
 		}
+		if (target != previousTarget){
+			integralCounter =0;
+		}
+		
+		
 		//System.out.println("Max SPEED: " + getMaxSpeed());
 		//Prevents the target position from being past extrema on actuators
-		if(position > actuator1.getMaxHeight()) 
-			position = actuator1.getMaxHeight(); 
-		if(position > actuator2.getMaxHeight()) 
-			position = actuator2.getMaxHeight(); 
-		if(position < actuator1.getMinHeight()) 
-			position = actuator1.getMinHeight();
-		if(position < actuator2.getMinHeight())
-			position = actuator2.getMinHeight();
+		if(target > actuator1.getMaxHeight()) 
+			target = actuator1.getMaxHeight(); 
+		if(target > actuator2.getMaxHeight()) 
+			target = actuator2.getMaxHeight(); 
+		if(target < actuator1.getMinHeight()) 
+			target = actuator1.getMinHeight();
+		if(target < actuator2.getMinHeight())
+			target = actuator2.getMinHeight();
 		// -----------------------------------------
 		int direction;
-		double deltaPosition1 = position - actuator1.getPosition(); // Distance of Actuator 1 to target Position
-		double deltaPosition2 = position -actuator2.getPosition(); // Distance of Actuator 2 to target Position
+		double deltaPosition1 = target - actuator1.getPosition(); // Distance of Actuator 1 to target Position
+		double deltaPosition2 = target -actuator2.getPosition(); // Distance of Actuator 2 to target Position
 		//double deltaPositions = deltaPosition1 - deltaPosition2; // The Difference between the distance from each Target
 		double deltaPositions = actuator1.getPosition() - actuator2.getPosition();
 		SmartDashboard.putNumber("DeltaPositions", deltaPositions); 
-		double speed1 = .05*deltaPosition1 + .001*integralCounter*deltaPosition1; // sets the speed to be proportional to the Distance form target
-		double speed2 = .05*deltaPosition2 + .001*integralCounter*deltaPosition2; // As it approaches target, it decelerates
+		double speed1 = proportional*deltaPosition1 + .005*integralCounter*deltaPosition1; // sets the speed to be proportional to the Distance form target
+		double speed2 = deltaPosition2*proportional + .005*integralCounter*deltaPosition2; // As it approaches target, it decelerates
 		if(speed1 <0){ // actuator going down --> going up on lift
 			direction = -1;
-			if(this.getOutputCurrent()>30){
-				this.setMaxSpeed(1);
-			}else if(this.getOutputCurrent() > 15){
-				this.setMaxSpeed(.8);
-			}
-			else if(this.getOutputCurrent() > 7.5){
-				this.setMaxSpeed(.6);
-			}else{
-				this.setMaxSpeed(.4);
-			}
 		}
 		else{ //actuator going up --> going down on lift
-			direction = 1;
-			if(this.getOutputCurrent()>30){
-				this.setMaxSpeed(1);
-			}else if(this.getOutputCurrent() > 15){
-				this.setMaxSpeed(.8);
-			}
-			else{
-				this.setMaxSpeed(.4);
-			}		}
+			direction = 1;		
+		}
+		if(Math.abs(deltaPosition1) <2 && Math.abs(deltaPosition2) <2 && !isToPosition){//if it is within 2 cm of target begin integral accumulation
+			if(integralCounter < 500) //maximum integral accumulation of 500
+			integralCounter++;
+		}
+		else{
+			integralCounter = 0;
+		}
+		if(previousDirection !=direction && target == previousTarget){ //if direction overshoots and the target is the same, then reset integral accumulation
+			integralCounter = 0;
+		}
+		//motor speed calculations complete, update variables
+		previousDirection = direction; 
+		previousTarget = target;
+		SmartDashboard.putNumber("integral count", integralCounter);
+		
+		double max = this.getOutputCurrent() *.03333 + .4; //determines a max speed based on the current of the actuators.
+		if(max > 1) // The greater the load on the actuators--> the greater the max speed, maximum max speed of 1 --> 100% output
+			max = 1;
+		this.setMaxSpeed(max);
+		
 		//prevents any speed from being sent that is greater than the maximum speed wanted
 		if(speed1 > maxSpeed)
 			speed1= maxSpeed;
@@ -75,6 +88,7 @@ public class DualActuators {
 			speed1= -maxSpeed;
 		if(speed2<-maxSpeed)
 			speed2= -maxSpeed;
+		
 		
 		if(Math.abs(deltaPosition1)<Math.abs(deltaPosition2)){ //Actuator 1 is moving more quickly
 			speed1-= .025*Math.abs(deltaPositions)*direction; //Decreases the speed of the first Actuator proportional to the error between the two  
@@ -88,7 +102,7 @@ public class DualActuators {
 		SmartDashboard.putNumber("speed1", speed1);
 		SmartDashboard.putNumber("speed2", speed2);
 		SmartDashboard.putNumber("deltaSpeed", speed1-speed2);
-		if((this.getPosition() <target+.25)&&(this.getPosition()>target-.25))
+		if((Math.abs(deltaPosition1)<.25 && Math.abs(deltaPosition2) < .25))
 			isToPosition = true;
 		else{
 			isToPosition = false;
@@ -97,15 +111,9 @@ public class DualActuators {
 			speed1 = 0;
 			speed2 = 0;
 		}
-		
-		
 		actuator1.set(speed1); //Sets the actuators speeds
 		actuator2.set(speed2);
-		if(Math.abs(deltaPosition1) <1 && Math.abs(deltaPosition2) <1)
-		integralCounter++;
-		else{
-			integralCounter = 0;
-		}
+	
 	}
 	public double getPosition(){
 		return (actuator1.getPosition()+actuator2.getPosition())/2;
@@ -135,5 +143,8 @@ public class DualActuators {
 	}
 	public double getOutputCurrent(){
 		return (actuator1.getOutputCurrent()+actuator2.getOutputCurrent())/2;
+	}
+	public void setProportional(double prop){
+		proportional = prop;
 	}
 }

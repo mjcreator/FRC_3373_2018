@@ -72,6 +72,7 @@ public class SwerveWheel {
 		
 		rotateMotor.overrideLimitSwitchesEnable(false);
 		rotateMotor.setNeutralMode(NeutralMode.Brake); // Activates brake mode
+		driveMotor.setNeutralMode(NeutralMode.Brake); // Activates brake mode
 		rotateAngle = rotateAng;
 		wheelModifier = wheelMod;
 		setPID();
