@@ -38,4 +38,15 @@ public class UltraSonics {
 			return backSensor.getVoltage();
 		}
 	}
+	public double getRawDistance(int whichSensor){
+		if(whichSensor == 1){
+			return leftSensor.getRawDistance();
+		}
+		else if(whichSensor == 2){
+			return rightSensor.getRawDistance();
+		}
+		else{
+			return backSensor.getRawDistance();
+		}
+	}
 }

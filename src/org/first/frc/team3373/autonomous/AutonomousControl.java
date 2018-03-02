@@ -49,14 +49,17 @@ public class AutonomousControl {
 		auto_4_0 = new Auto_4_0(swerve, lifter ,grabber);
 		auto_4_1 = new Auto_4_1(swerve, lifter ,grabber);
 		auto_4_2 = new Auto_4_2(swerve, lifter ,grabber);
-		auto_5_0 = new Auto_5_0(swerve, lifter ,grabber);
+		auto_5_0 = new Auto_5_0(swerve, lifter ,grabber, this.isScaleLeft());
 		auto_5_1 = new Auto_5_1(swerve, lifter ,grabber);
 
 	}
 	
 	public void activateAuto(){
-		swerve.setAutonomousOffset(90);
-		auto_1_1.run();
+	//	swerve.setAutonomousOffset(90);
+	//	auto_1_0.run();
+		swerve.setAutonomousOffset(180);
+		swerve.driveXInchesFromSurface(21.5, 180, 3, true, 1);
+		
 	/*	switch (positionalID) {
 		case 0:
 			driveStraight.run();

@@ -42,8 +42,10 @@ public class Ultrasonic {
 			return previousAccurateDistance;
 		}
 			
-		//previousDistance = currentDistance;
-		previousDistance = currentDistance;
+		if(currentDistance < 192)
+			previousDistance = currentDistance;
+		else
+			return previousDistance;
 		return currentDistance; 
 	}
 	public double getVoltage(){
