@@ -4,105 +4,149 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.RobotState;
 
 public class Vision {
 	NetworkTableInstance inst;
-	NetworkTable table;
-	NetworkTableEntry entry;
+	NetworkTable Vtable;
+	NetworkTableEntry Ventry;
+
+	DigitalOutput lights;
+
+	NetworkTableEntry CamChoice1;
+	NetworkTableEntry CamChoice2;
+	NetworkTableEntry CamPreload;
+
+	UsbCamera VideoCam;
+	VideoSink server;
+	CvSink cvsink1;
 
 	private int camera1;
 	private int camera2;
-	
-	private Map<String, Integer> cammap = new HashMap<String, Integer>();
+	private int preCam;
 
-	public Vision() {
+	private int numCam;
+	private int numCamCO;
+
+	private Map<String, Integer> cammap;
+	ArrayList<VisionObject> objects = new ArrayList<VisionObject>();
+
+	// number of Cameras, new HashMap<String, Integer>();
+	public Vision() {// int NumberOfCameras,int
+						// NumberOfCamerasOnCoprocesser,Map<String, Integer>
+						// String2NumMap) {
 		inst = NetworkTableInstance.getDefault();
-		table = inst.getTable("VisionData");
-		entry = table.getEntry("Objects");
-		entry.addListener((event) -> dataRefresh(event), EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-		//Map<String, Integer> cammap = new HashMap<String, Integer>();
+		Vtable = inst.getTable("VisionData");
+		Ventry = Vtable.getEntry("Objects");
+		Ventry.addListener((event) -> dataRefresh(event), EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+
+		VideoCam = CameraServer.getInstance().startAutomaticCapture(0);
+		cvsink1 = new CvSink("cam1cv");
+		cvsink1.setSource(VideoCam);
+		cvsink1.setEnabled(false);
+		server = CameraServer.getInstance().getServer();
+
+		// numCam = NumberOfCameras;
+		// numCamCO = NumberOfCamerasOnCoprocesser;
+
+		numCam = 4;
+		numCamCO = 3;
+
+		// cammap = String2NumMap;
+
+		CamChoice1 = Vtable.getEntry("Camera1");
+		CamChoice2 = Vtable.getEntry("Camera2");
+		CamPreload = Vtable.getEntry("PreLoad");
+
+		lights = new DigitalOutput(9);
+		// CamEntry = Vtable.getEntry("Objects");
+		cammap = new HashMap<String, Integer>();
 		cammap.put("front", 0);
 		cammap.put("left", 1);
 		cammap.put("right", 2);
 		cammap.put("back", 3);
-		
-	}
 
-	ArrayList<VisionObject> objects = new ArrayList<VisionObject>();
-
-	private void dataRefresh(EntryNotification event) {
-		try {
-			String[] objectData = event.value.getStringArray();
-			if (objectData.length == 0) {
-				return;
-			}
-			// System.out.print(objectData);
-			objects.clear();
-			for (int i = 0; i < objectData.length; i++) {
-				// System.out.print(objectData[i]);
-				objectData[i] = objectData[i].replace("[", "");
-				objectData[i] = objectData[i].replace("]", "");
-				String[] data = objectData[i].split(", ");
-				System.out.print(data[0]);
-				objects.add(new VisionObject(Integer.parseInt(data[0]), Integer.parseInt(data[1]),
-						Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4])));
-				// System.out.print(" : ");
-			}
-			for (int i = 0; i < objects.size(); i++) {
-				objects.get(i).print();
-			}
-			System.out.println();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	// cameras
 
 	// switch to a camera
 	public void switchCamera(String name) {
-		int num = cammap.get(name);
-		if (num < 5) {
-			switchCamera(num, 0);
+		if (cammap.containsKey(name)) {
+			int num = cammap.get(name);
+			this.switchCamera(num, 0);
 		}
 	}
 
 	// switch to a camera
 	public void switchCamera(int num) {
-		switchCamera(num, 0);
+		this.switchCamera(num, 0);
 	}
 
 	// switch to a camera
 	public void switchCamera(String name, int stream) {
-		int num = cammap.get(name);
-		if (num < 5) {
-			switchCamera(num, stream);
+		if (cammap.containsKey(name)) {
+			int num = cammap.get(name);
+			this.switchCamera(num, stream);
 		}
 	}
 
 	// switch to a camera
 	public void switchCamera(int num, int stream) {
-		if (num < 5) {
-			if (stream == 0)
+		updatelights();
+		if (num < numCam) {
+			if (preCam == num) {
+				preCam = -1;
+			}
+			if (num >= numCamCO) {
+				server.setSource(VideoCam);
+				cvsink1.setEnabled(false);
+				return;
+			} else {
+				try {
+					server.setSource(null);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (stream == 0) {
+				CamChoice1.setNumber(num);
 				camera1 = num;
-			else if (stream == 1) {
+			} else if (stream == 1) {
+				CamChoice2.setNumber(num);
 				camera2 = num;
 			}
 		}
 	}
 
-	// preloads a camera for quicker switching
+	// preloads a camera for quicker switching overrides stream2
 	public void preLoadCamera(String name) {
-
+		int num = cammap.get(name);
+		this.preLoadCamera(num);
 	}
 
-	// preloads a camera for quicker switching
+	// preloads a camera for quicker switching overrides stream2
 	public void preLoadCamera(int num) {
-
+		updatelights();
+		if (num < numCam && num != camera1 && num != camera2) {
+			if (num >= numCamCO) {
+				cvsink1.setEnabled(true);
+				return;
+			} else {
+				cvsink1.setEnabled(false);
+			}
+			CamPreload.setNumber(num);
+			preCam = num;
+		}
 	}
 
 	// Detection
@@ -315,6 +359,37 @@ public class Vision {
 
 	public int size() {
 		return objects.size();
+	}
+
+	// loads in new Data
+	private void dataRefresh(EntryNotification event) {
+		updatelights();
+		try {
+			String[] objectData = event.value.getStringArray();
+			if (objectData.length == 0) {
+				return;
+			}
+			// System.out.print(objectData);
+			objects.clear();
+			for (int i = 0; i < objectData.length; i++) {
+				// System.out.print(objectData[i]);
+				objectData[i] = objectData[i].replace("[", "");
+				objectData[i] = objectData[i].replace("]", "");
+				String[] data = objectData[i].split(", ");
+				objects.add(new VisionObject(Integer.parseInt(data[0]), Integer.parseInt(data[1]),
+						Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4])));
+				// System.out.print(" : ");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void updatelights(){
+		if (RobotState.isAutonomous() || RobotState.isTest()) {
+			lights.set(true);
+		} else {
+			lights.set(false);
+		}
 	}
 
 }
