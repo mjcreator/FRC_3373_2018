@@ -24,13 +24,13 @@ public class Auto_2_0 {
 		public void run(){
 			SmartDashboard.putBoolean("Has Collided", swerve.hasCollidedPositiveX());
 			if(switchLeft){
-				if(!swerve.hasCollidedPositiveX()){
-					swerve.autonomousDrive(270, 90,1,1,1);
-					//System.out.println("bye");
+				if(!swerve.hasCollidedNegativeX()){
+					swerve.autonomousDrive(90, 90);
+					lifter.goToPosition(23);
 				}
 				else{ 
 					//System.out.println("Hi");
-					swerve.calculateSwerveControl(0, 0, 0);
+					grabber.exportCube();
 				}
 			}
 			else{

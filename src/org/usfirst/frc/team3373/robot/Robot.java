@@ -47,12 +47,12 @@ public class Robot extends TimedRobot {
 	int BREncoderCalibMin = 300;
 	int BREncoderCalibMax = 300;
 	
-/*	double robotWidth = 22.75; //TODO change robot dimensions to match this years robot
-	double robotLength = 27.375;*/
-	double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
-	double robotLength = 26.8125;
+	double robotWidth = 22.75; //TODO change robot dimensions to match this years robot
+	double robotLength = 27.375;
+	//double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
+	//double robotLength = 26.8125;
 
-
+/*
 	int LBdriveChannel = 1;
 	int LBrotateID = 2;
 	int LBencOffset = 420; // Zero values (value when wheel is turned to default
@@ -81,8 +81,9 @@ public class Robot extends TimedRobot {
 	int RFEncMin = 11;
 	int RFEncMax = 895;
 	double RFWheelMod = .8922;
+	*/
 	
-/*	int LBdriveChannel = 2;
+	int LBdriveChannel = 2;
 	int LBrotateID = 1;
 	int LBencOffset = 590; // Zero values (value when wheel is turned to default
 							// zero- bolt hole facing front.)
@@ -111,7 +112,6 @@ public class Robot extends TimedRobot {
 	int RFEncMax = 889;
 	double RFWheelMod = 1;
 	
-	*/
 	int leftUltraSonicPort =1;
 	int rightUltraSonicPort = 2;
 	int backUltraSonicPort = 3;
@@ -576,8 +576,7 @@ public class Robot extends TimedRobot {
 		
 		
 		//   *_*_*_*_*_*_*_* DRIVER MAIN CONTROLS *_*_*_*_*_*_*_*
-		
-		if (driver.isLBHeld()) {
+		if (driver.isLBHeld() || lifter.getPosition() < 10) {
 			swerve.sniper();
 		} else if (driver.isRBHeld()) {
 			swerve.turbo();
@@ -604,12 +603,12 @@ public class Robot extends TimedRobot {
 			lifter.goToPosition(2);
 		else
 			lifter.goToPosition(lifter.getPosition()); 
-		if(shooter.isAHeld()){
-			lifter.setProportional(.4);
-		}
-		else{
-			lifter.setProportional(.05);;
-		}
+		//if(shooter.isAHeld()){
+			//lifter.setProportional(.4);
+		//}
+		//else{
+			//lifter.setProportional(.05);;
+		//}
 		
 		if(shooter.isRBHeld()){
 			grabber.importCube();

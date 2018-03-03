@@ -55,10 +55,9 @@ public class AutonomousControl {
 	}
 	
 	public void activateAuto(){
-	//	swerve.setAutonomousOffset(90);
-	//	auto_1_0.run();
-		swerve.setAutonomousOffset(180);
-		swerve.driveXInchesFromSurface(21.5, 180, 3, true, 1);
+		swerve.setAutonomousOffset(90);
+		auto_1_0.run();
+
 		
 	/*	switch (positionalID) {
 		case 0:

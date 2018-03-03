@@ -491,10 +491,10 @@ public class SwerveControl {
 	}
 
 	public void sniper() { // Decreases speed of all motors
-		LFWheel.setSpeedModifier(.2);
-		LBWheel.setSpeedModifier(.2);
-		RFWheel.setSpeedModifier(.2);
-		RBWheel.setSpeedModifier(.2);
+		LFWheel.setSpeedModifier(.35);
+		LBWheel.setSpeedModifier(.35);
+		RFWheel.setSpeedModifier(.35);
+		RBWheel.setSpeedModifier(.35);
 	}
 
 	public void normalSpeed() { // Normal speed for all motors
@@ -503,7 +503,6 @@ public class SwerveControl {
 		RFWheel.setSpeedModifier(.5);
 		RBWheel.setSpeedModifier(.5);
 	}
-
 
 	public double getXJerk(){
 		double currentAccel = ahrs.getWorldLinearAccelX();
