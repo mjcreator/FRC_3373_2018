@@ -42,10 +42,13 @@ public class Ultrasonic {
 			return previousAccurateDistance;
 		}
 			
-		if(currentDistance < 192)
+		if(currentDistance < 180){
 			previousDistance = currentDistance;
-		else
+		}
+		else{
+			System.out.println("Signal Lost");
 			return previousDistance;
+		}
 		return currentDistance; 
 	}
 	public double getVoltage(){

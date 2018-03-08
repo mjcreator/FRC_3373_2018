@@ -770,7 +770,7 @@ public class SwerveControl {
 	public void driveXInchesFromSurface(double target,int faceAngle ,int whichUltrasonic){
 		double deltaDistance = (target - ultraSonicSensors.getDistance(whichUltrasonic));
 		double direction =  deltaDistance/Math.abs(deltaDistance);
-		double motorPower = Math.sqrt((Math.abs(deltaDistance)))*.1;
+		double motorPower = Math.sqrt((Math.abs(deltaDistance)))*.15;
 		if(motorPower > 1){
 			motorPower =1;
 		}
@@ -799,13 +799,13 @@ public class SwerveControl {
 		else{
 			isToPositionCounter = 0;
 		}
-		if(isToPositionCounter > 5)
+		if(isToPositionCounter > 3)
 			isToPosition = true;
 	}
 	public void driveXInchesFromSurface(double target,int faceAngle ,int directionalUltrasonic, boolean crossingCubes, int wallUltrasonic){
 		double deltaDistance = (target - ultraSonicSensors.getDistance(directionalUltrasonic));
 		double direction =  deltaDistance/Math.abs(deltaDistance);
-		double motorPower = Math.sqrt((Math.abs(deltaDistance)))*.1;
+		double motorPower = Math.sqrt((Math.abs(deltaDistance)))*.15;
 		if(motorPower > 1){
 			motorPower =1;
 		}
@@ -856,7 +856,7 @@ public class SwerveControl {
 		else{
 			isToPositionCounter = 0;
 		}
-		if(isToPositionCounter > 5)
+		if(isToPositionCounter > 3)
 			isToPosition = true;
 	}
 	public boolean isToDistanceFromWall(){

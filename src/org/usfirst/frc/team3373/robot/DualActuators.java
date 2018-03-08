@@ -74,7 +74,7 @@ public class DualActuators {
 		previousTarget = target;
 		SmartDashboard.putNumber("integral count", integralCounter);
 		
-		double max = this.getOutputCurrent() *.03333 + .4; //determines a max speed based on the current of the actuators.
+		double max = this.getOutputCurrent() *.03333 + .5; //determines a max speed based on the current of the actuators.
 		if(max > 1) // The greater the load on the actuators--> the greater the max speed, maximum max speed of 1 --> 100% output
 			max = 1;
 		this.setMaxSpeed(max);

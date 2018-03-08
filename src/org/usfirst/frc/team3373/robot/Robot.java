@@ -100,9 +100,9 @@ public class Robot extends TimedRobot {
 
 	int RBdriveChannel = 8;
 	int RBrotateID = 7;
-	int RBencOffset = 333;
-	int RBEncMin = 11;
-	int RBEncMax = 987;
+	int RBencOffset = 317;
+	int RBEncMin = 12;
+	int RBEncMax = 885;
 	double RBWheelMod = 1;
 
 	int RFdriveChannel = 6;
@@ -112,9 +112,9 @@ public class Robot extends TimedRobot {
 	int RFEncMax = 889;
 	double RFWheelMod = 1;
 	
-	int leftUltraSonicPort =1;
-	int rightUltraSonicPort = 2;
-	int backUltraSonicPort = 3;
+	int leftUltraSonicPort =2;
+	int rightUltraSonicPort = 1;
+	int backUltraSonicPort = 0;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
@@ -122,14 +122,14 @@ public class Robot extends TimedRobot {
 	static int actuator1Port2 = 10;//right
 	static int actuator2Port1 = 11;
 	static int actuator2Port2 = 12;
-	static double minPot1 = 115;
-	static double minPot2 = 119;
-	static double maxPot1 = 761;
-	static double maxPot2 = 766;
+	static double minPot1 = 97;
+	static double minPot2 = 94;
+	static double maxPot1 = 741;
+	static double maxPot2 = 739;
 	static double minDistance1 = 2;
 	static double minDistance2 = 2;
-	static double maxDistance1 = 27.4;
-	static double maxDistance2 = 27.4;
+	static double maxDistance1 = 27;
+	static double maxDistance2 = 27;
 	
 	DigitalInput positionalOnes; // Input for the 16-slot dial
 	DigitalInput positionalTwos;
@@ -174,12 +174,15 @@ public class Robot extends TimedRobot {
 	double yAccelMax;
 	double zAccelMax;
 	
+//	Vision vision;
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
+//		vision = new Vision();
 		robotCounter = 0;
 		
 		positionalOnes = new DigitalInput(3);
@@ -188,38 +191,43 @@ public class Robot extends TimedRobot {
 		
 		programOnes = new DigitalInput(7);
 		programTwos = new DigitalInput(6);
-		programFours = new DigitalInput(4);
+		programFours = new DigitalInput(5);
 		
+		positionalIndex = 7;
 		
-
-
 		if (positionalOnes.get()) {
-			positionalIndex += 1;
+			positionalIndex -= 1;
 		}
 		if (positionalTwos.get()) {
-			positionalIndex += 2;
+			positionalIndex -= 2;
 		}
 		if (positionalFours.get()) {
-			positionalIndex += 4;
+			positionalIndex -= 4;
 		}
 		if (positionalIndex == 8) {
 			positionalIndex = 0;
 		}
-		
-		
+		positionalIndex += 8;
+		positionalIndex%=8;
+		programIndex = 6;
 
 		if (programOnes.get()) {
-			programIndex += 1;
+			programIndex -= 1;
 		}
 		if (programTwos.get()) {
-			programIndex += 2;
+			programIndex -= 2;
 		}
 		if (programFours.get()) {
-			programIndex += 4;
+			programIndex -= 4;
 		}
 		if (programIndex == 8) {
 			programIndex = 0;
 		}
+		programIndex += 8;
+		programIndex %= 8;
+
+
+
 		lifter = new DualActuators(actuator1Port1,actuator2Port1,actuator1Port2,actuator2Port2,maxPot1,maxPot2,minPot1,minPot2,maxDistance1,maxDistance2,minDistance1,minDistance2);
 		swerve = new SwerveControl(LBdriveChannel, LBrotateID, LBencOffset, LBEncMin, LBEncMax, LBWheelMod, LFdriveChannel,
 				LFrotateID, LFencOffset, LFEncMin, LFEncMax, LFWheelMod, RBdriveChannel, RBrotateID, RBencOffset, RBEncMin,
@@ -264,6 +272,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		//vision.switchCamera(0);
 		autoController = new AutonomousControl(positionalIndex, programIndex, swerve, lifter, grabber);
 		swerve.ahrs.reset();
 	//	swerve.setDriveDistance(swerve.ultraSonicSensors.getDistance(1));
@@ -308,8 +317,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		SmartDashboard.putNumber("Jerk Z", swerve.getZJerk());
-		SmartDashboard.putNumber("Roll", swerve.ahrs.getRoll());
 		SmartDashboard.putNumber("Back Ultrasonic", swerve.ultraSonicSensors.getDistance(3));
 		SmartDashboard.putNumber("Left Ultrasonic", swerve.ultraSonicSensors.getDistance(1));
 		SmartDashboard.putNumber("Right Ultrasonic", swerve.ultraSonicSensors.getDistance(2));
@@ -346,20 +353,49 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 		int index = 1;// for testing purposes
-		if (positionalOnes.get()) {
+		if (programOnes.get()) {
 			index += 1;
 		}
-		if (positionalTwos.get()) {
+		if (programTwos.get()) {
 			index += 2;
 		}
-		if (positionalFours.get()) {
+		if (programFours.get()) {
 			index += 4;
 		}
 		if (index == 8) {
 			index = 0;
 		}
-		swerve.calculateSwerveControl(driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+		positionalIndex = 0;
+		if (positionalOnes.get()) {
+			positionalIndex += 1;
+		}
+		if (positionalTwos.get()) {
+			positionalIndex += 2;
+		}
+		if (positionalFours.get()) {
+			positionalIndex += 4;
+		}
+		if (positionalIndex == 8) {
+			positionalIndex = 0;
+		}
 		
+		
+		programIndex = 0;
+		if (programOnes.get()) {
+			programIndex += 1;
+		}
+		if (programTwos.get()) {
+			programIndex += 2;
+		}
+		if (programFours.get()) {
+			programIndex += 4;
+		}
+		if (programIndex == 8) {
+			programIndex = 0;
+		}
+		//swerve.calculateSwerveControl(driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
+		SmartDashboard.putNumber("Index1", positionalIndex);
+		SmartDashboard.putNumber("Index2", programIndex);
 		switch (index) {
 		case 0:
 			//SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
@@ -426,7 +462,7 @@ public class Robot extends TimedRobot {
 				zAccelMax = swerve.ahrs.getWorldLinearAccelZ();
 			}*/
 			
-			//SmartDashboard.putNumber("Index", index+1);
+
 			SmartDashboard.putNumber("X-Jerk Max: ", Math.abs(xJerkMax));
 			SmartDashboard.putNumber("Y-Jerk Max: ", Math.abs(yJerkMax));
 			SmartDashboard.putNumber("Z-Jerk Max: ", Math.abs(zJerkMax));
@@ -453,10 +489,10 @@ public class Robot extends TimedRobot {
 		case 6:
 			break;
 		case 7:
-			calibrateSwerve();
 			break;
 		}
 		//lifter.calibrate(shooter, true);
+		calibrateSwerve();
 		//lifter.calibrate(shooter, false);
 	//	grabber.exportCube();
 		
@@ -542,29 +578,31 @@ public class Robot extends TimedRobot {
 		if (positionalIndex == 8) {
 			positionalIndex = 0;
 		}
-		
-		programIndex = 0;
+		positionalIndex += 8;
+		positionalIndex%=8;
+		programIndex = 6;
 
 		if (programOnes.get()) {
-			programIndex += 1;
+			programIndex -= 1;
 		}
 		if (programTwos.get()) {
-			programIndex += 2;
+			programIndex -= 2;
 		}
 		if (programFours.get()) {
-			programIndex += 4;
+			programIndex -= 4;
 		}
 		if (programIndex == 8) {
 			programIndex = 0;
 		}
-		
-		SmartDashboard.putNumber("Pos Index: " , positionalIndex);
-		SmartDashboard.putNumber("Pro Index: ", programIndex);
+		programIndex += 8;
+		programIndex %= 8;
+		//SmartDashboard.putNumber("Pos Index: " , positionalIndex);
+		//SmartDashboard.putNumber("Pro Index: ", programIndex);
 		
 		//System.out.println("Dial 1: " + positionalIndex);
 		//System.out.println("Dial 1: " + programIndex);
 		
-		SmartDashboard.putNumber("Navx", swerve.ahrs.getYaw());
+		//SmartDashboard.putNumber("Navx", swerve.ahrs.getYaw());
 		
 		//   *_*_*_*_*_*_*_* SHARED MAIN CONTROLS *_*_*_*_*_*_*_*
 		
@@ -576,7 +614,7 @@ public class Robot extends TimedRobot {
 		
 		
 		//   *_*_*_*_*_*_*_* DRIVER MAIN CONTROLS *_*_*_*_*_*_*_*
-		if (driver.isLBHeld() || lifter.getPosition() < 10) {
+		if (driver.isLBHeld() ){//|| lifter.getPosition() < 10) {
 			swerve.sniper();
 		} else if (driver.isRBHeld()) {
 			swerve.turbo();
@@ -586,10 +624,11 @@ public class Robot extends TimedRobot {
 		if (driver.getRawAxis(Rtrigger) > .1) {
 			swerve.isFieldCentric = true;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
-		}/* else if (driver.getRawAxis(Ltrigger) > .1) {
+		} else if (driver.getRawAxis(Ltrigger) > .1) {
 			swerve.isFieldCentric = false;
+			swerve.setRotateDistance(40);
 			swerve.calculateObjectControl(driver.getRawAxis(RX));
-		}*/ else {
+		} else {
 			swerve.isFieldCentric = false;
 			swerve.calculateSwerveControl(-driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
 		}
@@ -598,17 +637,17 @@ public class Robot extends TimedRobot {
 		//   *_*_*_*_*_*_*_* SHOOTER MAIN CONTROLS *_*_*_*_*_*_*_*
 		SmartDashboard.putNumber("Actuator Position", lifter.getPosition());
 		if(shooter.getRawAxis(Ltrigger)>.1)
-			lifter.goToPosition(27.4);
+			lifter.goToPosition(27);
 		else if(shooter.getRawAxis(Rtrigger)>.1)
 			lifter.goToPosition(2);
 		else
 			lifter.goToPosition(lifter.getPosition()); 
-		//if(shooter.isAHeld()){
-			//lifter.setProportional(.4);
-		//}
-		//else{
-			//lifter.setProportional(.05);;
-		//}
+		if(shooter.isAHeld()){
+			lifter.setProportional(.4);
+		}
+		else{
+			lifter.setProportional(.05);;
+		}
 		
 		if(shooter.isRBHeld()){
 			grabber.importCube();

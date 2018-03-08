@@ -40,11 +40,14 @@ public class Auto_1_0 {
 			swerve.calculateSwerveControl(1, 0, 0);
 		}else if(shakeCounter < 50){
 			swerve.calculateSwerveControl(-1, 0, 0);
+			swerve.resetBump();
+		}else if(shakeCounter < 150){
+			swerve.resetBump();
 		}else if(isLeft){ //If scale is left
 			if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
 				swerve.setDriveDistance(30);
 				swerve.autonomousDrive(90, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
-	//			lifter.goToPosition(24);
+				lifter.goToPosition(24);
 			}else{//  robot has hit the bump
 				if(!isAtDistance1){
 					swerve.driveXInchesFromSurface(21.5, 0, 3);
@@ -54,7 +57,7 @@ public class Auto_1_0 {
 				}else{
 				if(!hasRisen){
 				swerve.calculateSwerveControl(0, 0, 0);
-	//			lifter.goToPosition(2);
+				lifter.goToPosition(2);
 				if(lifter.isToPosition()){
 					hasRisen = true;
 					swerve.resetIsToDistance();

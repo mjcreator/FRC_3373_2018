@@ -8,6 +8,8 @@ public class Auto_Drive_Straight {
 	SwerveControl swerve;
 	DualActuators lifter;
 	Grabber grabber;
+	boolean switchLeft;
+	boolean scaleLeft;
 	int driveCounter;
 	boolean spinCheck;
 	boolean spinCheck1;
@@ -23,10 +25,12 @@ public class Auto_Drive_Straight {
 	boolean spinCheck11;
 	boolean spinCheck12;
 	
-		public Auto_Drive_Straight(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber){
+		public Auto_Drive_Straight(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean isSwitchLeft, boolean isScaleLeft){
 		swerve = swerveDrive;
 		lifter = actuators;
 		grabber = cubeGrabber;
+		switchLeft = isSwitchLeft;
+		scaleLeft  = isScaleLeft;
 		driveCounter = 0;
 		spinCheck = false;
 		spinCheck1 = false;
@@ -44,8 +48,26 @@ public class Auto_Drive_Straight {
 		}
 		
 		public void run(){
-		swerve.sniper();
-		swerve.calculateSwerveControl(.5, 0, 0);
+			driveCounter ++;
+			System.out.println(driveCounter + "...");
+		//swerve.sniper();
+			if(!switchLeft){
+				System.out.println("Right...");
+				swerve.autonomousDrive(0, 90,.8,.8);
+				if(driveCounter > 350){
+					grabber.exportCube();
+				}
+			}else{
+				System.out.println("Left...");
+				if(driveCounter < 350){
+					swerve.autonomousDrive(90, 90, .5, .5);
+				}else{
+					swerve.autonomousDrive(0, 90,.8,.8);
+					if(driveCounter > 650){
+						grabber.exportCube();
+					}
+				}
+			}
 		}
 
 }

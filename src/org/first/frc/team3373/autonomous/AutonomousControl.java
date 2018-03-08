@@ -37,7 +37,7 @@ public class AutonomousControl {
 		grabber = cubeGrabber;
 		
 		
-		driveStraight = new Auto_Drive_Straight(swerve, lifter ,grabber);
+		driveStraight = new Auto_Drive_Straight(swerve, lifter ,grabber, this.isSwitchLeft(), this.isScaleLeft());
 		auto_1_0 = new Auto_1_0(swerve, lifter ,grabber, this.isScaleLeft());
 		auto_1_1 = new Auto_1_1(swerve, lifter ,grabber, this.isScaleLeft());
 		auto_2_0 = new Auto_2_0(swerve, lifter ,grabber,this.isSwitchLeft(),this.isScaleLeft());
@@ -46,7 +46,7 @@ public class AutonomousControl {
 		auto_3_0 = new Auto_3_0(swerve, lifter ,grabber);
 		auto_3_1 = new Auto_3_1(swerve, lifter ,grabber);
 		auto_3_2 = new Auto_3_2(swerve, lifter ,grabber);
-		auto_4_0 = new Auto_4_0(swerve, lifter ,grabber);
+		auto_4_0 = new Auto_4_0(swerve, lifter ,grabber, this.isSwitchLeft(), this.isScaleLeft());
 		auto_4_1 = new Auto_4_1(swerve, lifter ,grabber);
 		auto_4_2 = new Auto_4_2(swerve, lifter ,grabber);
 		auto_5_0 = new Auto_5_0(swerve, lifter ,grabber, this.isScaleLeft());
@@ -56,10 +56,9 @@ public class AutonomousControl {
 	
 	public void activateAuto(){
 		swerve.setAutonomousOffset(90);
-		auto_1_0.run();
 
 		
-	/*	switch (positionalID) {
+		switch (positionalID) {
 		case 0:
 			driveStraight.run();
 			
@@ -236,7 +235,7 @@ public class AutonomousControl {
 			
 
 			break;
-	}*/
+	}
 	
 	}
 	
