@@ -59,12 +59,22 @@ public class DualActuators {
 		else{ //actuator going up --> going down on lift
 			direction = 1;		
 		}
-		if(Math.abs(deltaPosition1) <2 && Math.abs(deltaPosition2) <2 && !isToPosition){//if it is within 2 cm of target begin integral accumulation
-			if(integralCounter < 500) //maximum integral accumulation of 500
-			integralCounter++;
-		}
-		else{
-			integralCounter = 0;
+		if(direction ==-1){
+			if(Math.abs(deltaPosition1) <3 && Math.abs(deltaPosition2) <3 && !isToPosition){//if it is within 2 cm of target begin integral accumulation
+				if(integralCounter < 1500) //maximum integral accumulation of 500
+					integralCounter++;
+			}
+			else{
+				integralCounter = 0;
+			}
+		}else{
+			if(Math.abs(deltaPosition1) <2 && Math.abs(deltaPosition2) <2 && !isToPosition){//if it is within 2 cm of target begin integral accumulation
+				if(integralCounter < 1500) //maximum integral accumulation of 500
+					integralCounter++;
+			}
+			else{
+				integralCounter = 0;
+			}
 		}
 		if(previousDirection !=direction && target == previousTarget){ //if direction overshoots and the target is the same, then reset integral accumulation
 			integralCounter = 0;

@@ -210,7 +210,7 @@ public class SwerveControl {
 		}
 		if (isFieldCentric) {
 			
-			orientationOffset = ahrs.getYaw()- 90 + startOffset + 180; // if in field centric mode make
+			orientationOffset = ahrs.getYaw()- 90 + startOffset + 360; // if in field centric mode make
 												// offset equal to the current
 												// angle of the navX
 		} else {
@@ -449,7 +449,7 @@ public class SwerveControl {
 													// mode
 
 		radius = objectRadius;
-		System.out.println("RADIUSSSSSSSSS!!!: " + radius);
+//		System.out.println("RADIUSSSSSSSSS!!!: " + radius);
 
 		// TODO change radius to ultrasonic input in order for this to work
 		// Radius: distance to front of robot (lengthwise)
@@ -457,10 +457,10 @@ public class SwerveControl {
 		double distanceToFront = radius;
 		double distanceToBack = radius + robotLength;
 
-		LFWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
-		RFWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
-		LBWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
-		RBWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
+		LFWheel.setTargetAngle(270 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
+		RFWheel.setTargetAngle(90 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
+		LBWheel.setTargetAngle(270 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
+		RBWheel.setTargetAngle(90 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
 
 		LBWheel.setSpeed(RX);
 		RBWheel.setSpeed(RX);
@@ -542,7 +542,7 @@ public class SwerveControl {
 	
 	public void setSpinAngle(int angle) {
 		spinAngle = (angle + 360 - autonomousOffset)%360;
-		System.out.println("SpAn: " + spinAngle);
+	//	out.println("SpAn: " + spinAngle);
 		resetAngleFlag();
 	}
 	
@@ -568,7 +568,7 @@ public class SwerveControl {
 		}
 		
 		this.calculateSwerveControl(0, 0, (Math.sqrt(Math.sqrt(Math.abs(angleError)))+1)*.15*directionMod*optimalDirection);
-		System.out.println("Spinning.");
+	//	System.out.println("Spinning.");
 		SmartDashboard.putNumber("Anglelelele Error: ", angleError);
 		if(Math.abs(angleError) < 4 && spinAngleCounter > 20){ //If the angle is within 4 degrees of the target
 				isAtAngle = true;
@@ -609,7 +609,7 @@ public class SwerveControl {
 		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
-		System.out.println((driveAngle));
+//		System.out.println((driveAngle));
 		SmartDashboard.putNumber("Angleeel error: ", angleError);
 		calculateSwerveControl(leftXComponent,leftYComponent, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 	}
@@ -638,7 +638,7 @@ public class SwerveControl {
 		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
-		System.out.println((driveAngle));
+	//	System.out.println((driveAngle));
 		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
 		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
 		SmartDashboard.putNumber("Angleeel error: ", angleError);
@@ -689,7 +689,7 @@ public class SwerveControl {
 		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
-		System.out.println((driveAngle));
+//		System.out.println((driveAngle));
 		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
 		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
 		SmartDashboard.putNumber("Angleeel error: ", angleError);
@@ -744,7 +744,7 @@ public class SwerveControl {
 		double leftXComponent = Math.sin(Math.toRadians((driveAngle)%360));//*XspeedMod;
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
-		System.out.println((driveAngle));
+//		System.out.println((driveAngle));
 		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
 		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
 		SmartDashboard.putNumber("Angleeel error: ", angleError);
@@ -776,6 +776,11 @@ public class SwerveControl {
 		}
 		if(motorPower < -1){
 			motorPower=-1;
+		}
+		if(Math.abs(deltaDistance) > 75){
+			turbo();
+		}else{
+			normalSpeed();
 		}
 		if(whichUltrasonic == 1){
 			if(direction >0)
@@ -811,6 +816,11 @@ public class SwerveControl {
 		}
 		if(motorPower < -1){
 			motorPower=-1;
+		}
+		if(Math.abs(deltaDistance) > 75){
+			turbo();
+		}else{
+			normalSpeed();
 		}
 		if(!crossingCubes){
 		if(directionalUltrasonic == 1){
@@ -911,6 +921,9 @@ public class SwerveControl {
 	}
 	public void activateStartOffset(){
 		startOffset = futureOffset;
+	}
+	public void activateAutoOffset(){
+		startOffset = autonomousOffset;
 	}
 	
 	

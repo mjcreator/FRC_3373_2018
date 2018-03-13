@@ -7,11 +7,11 @@ public class AutonomousControl {
 	int positionalID;
 	int programID;
 	String locations;
-	
+
 	SwerveControl swerve;
 	DualActuators lifter;
 	Grabber grabber;
-	
+
 	Auto_Drive_Straight driveStraight;
 	Auto_1_0 auto_1_0;
 	Auto_1_1 auto_1_1;
@@ -26,8 +26,9 @@ public class AutonomousControl {
 	Auto_4_2 auto_4_2;
 	Auto_5_0 auto_5_0;
 	Auto_5_1 auto_5_1;
-	
-	public AutonomousControl(int positional, int program, SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber){
+
+	public AutonomousControl(int positional, int program, SwerveControl swerveDrive, DualActuators actuators,
+			Grabber cubeGrabber) {
 		positionalID = positional;
 		programID = program;
 		locations = DriverStation.getInstance().getGameSpecificMessage();
@@ -35,37 +36,36 @@ public class AutonomousControl {
 		swerve = swerveDrive;
 		lifter = actuators;
 		grabber = cubeGrabber;
-		
-		
-		driveStraight = new Auto_Drive_Straight(swerve, lifter ,grabber, this.isSwitchLeft(), this.isScaleLeft());
-		auto_1_0 = new Auto_1_0(swerve, lifter ,grabber, this.isScaleLeft());
-		auto_1_1 = new Auto_1_1(swerve, lifter ,grabber, this.isScaleLeft());
-		auto_2_0 = new Auto_2_0(swerve, lifter ,grabber,this.isSwitchLeft(),this.isScaleLeft());
-		auto_2_1 = new Auto_2_1(swerve, lifter ,grabber);
-		auto_2_2 = new Auto_2_2(swerve, lifter ,grabber);
-		auto_3_0 = new Auto_3_0(swerve, lifter ,grabber);
-		auto_3_1 = new Auto_3_1(swerve, lifter ,grabber);
-		auto_3_2 = new Auto_3_2(swerve, lifter ,grabber);
-		auto_4_0 = new Auto_4_0(swerve, lifter ,grabber, this.isSwitchLeft(), this.isScaleLeft());
-		auto_4_1 = new Auto_4_1(swerve, lifter ,grabber);
-		auto_4_2 = new Auto_4_2(swerve, lifter ,grabber);
-		auto_5_0 = new Auto_5_0(swerve, lifter ,grabber, this.isScaleLeft());
-		auto_5_1 = new Auto_5_1(swerve, lifter ,grabber);
+
+		driveStraight = new Auto_Drive_Straight(swerve, lifter, grabber, this.isSwitchLeft(), this.isScaleLeft());
+		auto_1_0 = new Auto_1_0(swerve, lifter, grabber, this.isSwitchLeft(), this.isScaleLeft());
+		auto_1_1 = new Auto_1_1(swerve, lifter, grabber, this.isScaleLeft());
+		auto_2_0 = new Auto_2_0(swerve, lifter, grabber, this.isSwitchLeft(), this.isScaleLeft());
+		auto_2_1 = new Auto_2_1(swerve, lifter, grabber);
+		auto_2_2 = new Auto_2_2(swerve, lifter, grabber);
+		auto_3_0 = new Auto_3_0(swerve, lifter, grabber);
+		auto_3_1 = new Auto_3_1(swerve, lifter, grabber);
+		auto_3_2 = new Auto_3_2(swerve, lifter, grabber);
+		auto_4_0 = new Auto_4_0(swerve, lifter, grabber, this.isSwitchLeft(), this.isScaleLeft());
+		auto_4_1 = new Auto_4_1(swerve, lifter, grabber);
+		auto_4_2 = new Auto_4_2(swerve, lifter, grabber);
+		auto_5_0 = new Auto_5_0(swerve, lifter, grabber, this.isScaleLeft());
+		auto_5_1 = new Auto_5_1(swerve, lifter, grabber);
 
 	}
-	
-	public void activateAuto(){
-		swerve.setAutonomousOffset(90);
 
-		
+	public void activateAuto() {
+		swerve.setAutonomousOffset(90);
+		swerve.activateAutoOffset();
+	//	auto_1_0.run();
+
 		switch (positionalID) {
 		case 0:
 			driveStraight.run();
-			
-			
+
 			break;
 		case 1:
-			
+
 			switch (programID) {
 			case 0:
 				auto_1_0.run();
@@ -92,11 +92,10 @@ public class AutonomousControl {
 				driveStraight.run();
 				break;
 			}
-			
-			
+
 			break;
 		case 2:
-			
+
 			switch (programID) {
 			case 0:
 				auto_2_0.run();
@@ -124,11 +123,10 @@ public class AutonomousControl {
 				driveStraight.run();
 				break;
 			}
-			
-			
+
 			break;
 		case 3:
-			
+
 			switch (programID) {
 			case 0:
 				auto_3_0.run();
@@ -155,9 +153,7 @@ public class AutonomousControl {
 				driveStraight.run();
 				break;
 			}
-			
-			
-			
+
 			break;
 		case 4:
 
@@ -187,9 +183,7 @@ public class AutonomousControl {
 				driveStraight.run();
 				break;
 			}
-			
-			
-			
+
 			break;
 		case 5:
 
@@ -219,40 +213,34 @@ public class AutonomousControl {
 				driveStraight.run();
 				break;
 			}
-			
-			
+
 			break;
 		case 6:
 			driveStraight.run();
-			
-			
-			
+
 			break;
 		case 7:
 			driveStraight.run();
-			
-			
-			
 
 			break;
+		}
+
 	}
-	
-	}
-	
-	public boolean isSwitchLeft(){
-		if(locations.charAt(0) == 'L'){
+
+	public boolean isSwitchLeft() {
+		if (locations.charAt(0) == 'L') {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public boolean isScaleLeft(){
-		if(locations.charAt(1) == 'L'){
+
+	public boolean isScaleLeft() {
+		if (locations.charAt(1) == 'L') {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
+
 }

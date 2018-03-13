@@ -51,8 +51,8 @@ public class Robot extends TimedRobot {
 	double robotLength = 27.375;
 	//double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
 	//double robotLength = 26.8125;
-
 /*
+
 	int LBdriveChannel = 1;
 	int LBrotateID = 2;
 	int LBencOffset = 420; // Zero values (value when wheel is turned to default
@@ -124,12 +124,12 @@ public class Robot extends TimedRobot {
 	static int actuator2Port2 = 12;
 	static double minPot1 = 97;
 	static double minPot2 = 94;
-	static double maxPot1 = 741;
-	static double maxPot2 = 739;
+	static double maxPot1 = 752;
+	static double maxPot2 = 754;
 	static double minDistance1 = 2;
 	static double minDistance2 = 2;
-	static double maxDistance1 = 27;
-	static double maxDistance2 = 27;
+	static double maxDistance1 = 27.5;
+	static double maxDistance2 = 27.5;
 	
 	DigitalInput positionalOnes; // Input for the 16-slot dial
 	DigitalInput positionalTwos;
@@ -140,8 +140,8 @@ public class Robot extends TimedRobot {
 	DigitalInput programFours;
 	
 	//Grabber Initialization
-	int grabberPort1 =0; // Need to updtate for the Robot
-	int grabberPort2 =1;
+	int grabberPort1 =13; // Need to updtate for the Robot
+	int grabberPort2 =14;
 	Grabber grabber;
 	
 	
@@ -317,6 +317,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+	//DriverStation.getInstance().
 		SmartDashboard.putNumber("Back Ultrasonic", swerve.ultraSonicSensors.getDistance(3));
 		SmartDashboard.putNumber("Left Ultrasonic", swerve.ultraSonicSensors.getDistance(1));
 		SmartDashboard.putNumber("Right Ultrasonic", swerve.ultraSonicSensors.getDistance(2));
@@ -491,8 +492,8 @@ public class Robot extends TimedRobot {
 		case 7:
 			break;
 		}
-		//lifter.calibrate(shooter, true);
-		calibrateSwerve();
+		lifter.calibrate(shooter, true);
+		//calibrateSwerve();
 		//lifter.calibrate(shooter, false);
 	//	grabber.exportCube();
 		
@@ -637,7 +638,7 @@ public class Robot extends TimedRobot {
 		//   *_*_*_*_*_*_*_* SHOOTER MAIN CONTROLS *_*_*_*_*_*_*_*
 		SmartDashboard.putNumber("Actuator Position", lifter.getPosition());
 		if(shooter.getRawAxis(Ltrigger)>.1)
-			lifter.goToPosition(27);
+			lifter.goToPosition(27.5);
 		else if(shooter.getRawAxis(Rtrigger)>.1)
 			lifter.goToPosition(2);
 		else
@@ -649,12 +650,14 @@ public class Robot extends TimedRobot {
 			lifter.setProportional(.05);;
 		}
 		
-		if(shooter.isRBHeld()){
+		if(Math.abs(shooter.getRawAxis(LY)) > .1){
+			grabber.set(shooter.getRawAxis(LY));
+		}else if(shooter.isRBHeld()){
 			grabber.importCube();
 		}else if(shooter.isLBHeld()){
 			grabber.exportCube();
 		}else{
-			grabber.idle();
+			grabber.set(0);
 		}
 		if(shooter.isBackHeld()){
 			lifter.setMaxSpeed(1);

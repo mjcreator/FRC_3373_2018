@@ -46,7 +46,7 @@ public class Ultrasonic {
 			previousDistance = currentDistance;
 		}
 		else{
-			System.out.println("Signal Lost");
+			//System.out.println("Signal Lost");
 			return previousDistance;
 		}
 		return currentDistance; 

@@ -9,7 +9,8 @@ public class Auto_1_0 {
 	SwerveControl swerve;
 	DualActuators lifter;
 	Grabber grabber;
-	boolean isLeft;
+	boolean isSwitchLeft;
+	boolean isScaleLeft;
 	boolean hasRisen;
 	boolean toDistance1R;
 	boolean toDistance2R;
@@ -18,13 +19,15 @@ public class Auto_1_0 {
 	boolean isAtDistance1;
 	boolean isAtDistance2;
 	int driveTimer = 0;
-	int ejectTimer = 0;
+	int exportTimer1 = 0;
+	int exportTimer2 = 0;
 	int shakeCounter = 0;
-	public Auto_1_0(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean isScaleLeft){
+	public Auto_1_0(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean switchLeft, boolean scaleLeft){
 		swerve = swerveDrive;
 		lifter = actuators;
 		grabber = cubeGrabber;
-		isLeft= isScaleLeft;
+		isSwitchLeft = switchLeft;
+		isScaleLeft= scaleLeft;
 		toDistance1R = false;
 		toRotate1R = false;
 		}
@@ -41,10 +44,33 @@ public class Auto_1_0 {
 		}else if(shakeCounter < 50){
 			swerve.calculateSwerveControl(-1, 0, 0);
 			swerve.resetBump();
-		}else if(shakeCounter < 150){
-			swerve.resetBump();
-		}else if(isLeft){ //If scale is left
-			if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
+		}else if(isScaleLeft){ //If scale is left
+			//190 forwards, 80 right
+			
+			if(!isAtDistance1){
+				swerve.driveXInchesFromSurface(170, 90, 3);
+		//		lifter.goToPosition(24);
+				if(swerve.isToDistanceFromWall()){
+					isAtDistance1 = true;
+				}
+			}else if(isAtDistance2){
+				swerve.driveXInchesFromSurface(80, 90, 1);
+		//		lifter.goToPosition(14);
+				if(swerve.isToDistanceFromWall()){
+					isAtDistance2 = true;
+				}
+			}else if(!hasRisen){
+		//		lifter.goToPosition(2);
+				if(lifter.isToPosition()){
+					
+				}
+			}else if(exportTimer1 < 100){
+		//		grabber.exportCube();
+				exportTimer1++;
+			}
+			
+			
+			/*if(!swerve.hasHitBump()){//if the robot has not yet hit the bump
 				swerve.setDriveDistance(30);
 				swerve.autonomousDrive(90, 0,1,1,3);//drive straight--> drive 90 degrees forward for wheels for robot orientation 0 degrees is forward
 				lifter.goToPosition(24);
@@ -102,13 +128,13 @@ public class Auto_1_0 {
 					swerve.driveForwardXInchesFromSurface(21.5, 90);*/
 				//}
 				
-			}
+		//	}
 			
 			
 			
 			
 		}else{
-			if(!toDistance1R){
+		/*	if(!toDistance1R){
 				swerve.setDriveDistance(30);
 				swerve.driveXInchesFromSurface(175, 0, 2, false, 3);
 				if(swerve.isToDistanceFromWall()){
@@ -145,7 +171,7 @@ public class Auto_1_0 {
 				if(lifter.isToPosition()){
 					hasRisen = true;
 				}
-			}else if(ejectTimer < 25){
+			}else if(exportTimer1 < 25){
 				grabber.exportCube();
 				swerve.resetIsToDistance();
 				lifter.resetIsToPosition();
@@ -154,7 +180,9 @@ public class Auto_1_0 {
 			}else{
 				lifter.goToPosition(26.5);
 			}
-		}
+		}*/
+	}
+		
 	}
 
 }
