@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
 	double robotLength = 27.375;
 	//double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
 	//double robotLength = 26.8125;
-/*
+
 
 	int LBdriveChannel = 1;
 	int LBrotateID = 2;
@@ -81,8 +81,8 @@ public class Robot extends TimedRobot {
 	int RFEncMin = 11;
 	int RFEncMax = 895;
 	double RFWheelMod = .8922;
-	*/
 	
+	/*
 	int LBdriveChannel = 2;
 	int LBrotateID = 1;
 	int LBencOffset = 590; // Zero values (value when wheel is turned to default
@@ -111,10 +111,15 @@ public class Robot extends TimedRobot {
 	int RFEncMin = 10;
 	int RFEncMax = 889;
 	double RFWheelMod = 1;
-	
-	int leftUltraSonicPort =2;
+	*/
+/*	int leftUltraSonicPort =2;
 	int rightUltraSonicPort = 1;
-	int backUltraSonicPort = 0;
+	int backUltraSonicPort = 0; Timber
+	*/
+	//lexi
+	int leftUltraSonicPort =1;
+	int rightUltraSonicPort = 0;
+	int backUltraSonicPort = 2;
 	
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
@@ -397,6 +402,8 @@ public class Robot extends TimedRobot {
 		//swerve.calculateSwerveControl(driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
 		SmartDashboard.putNumber("Index1", positionalIndex);
 		SmartDashboard.putNumber("Index2", programIndex);
+		SmartDashboard.putNumber("Back Ultraboi!", swerve.ultraSonicSensors.getDistance(3));
+		this.activateControl();
 		switch (index) {
 		case 0:
 			//SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
@@ -423,35 +430,6 @@ public class Robot extends TimedRobot {
 			}
 			
 			
-			SmartDashboard.putNumber("X-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelX()));
-			SmartDashboard.putNumber("Y-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelY()));
-			SmartDashboard.putNumber("Z-Accel: ", Math.abs(swerve.ahrs.getWorldLinearAccelZ()));
-			SmartDashboard.putNumber("BR Encoder: ", swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw());
-			double currentXJerk = swerve.getXJerk();
-			double currentYJerk = swerve.getYJerk();
-			double currentZJerk = swerve.getZJerk();
-			SmartDashboard.putNumber("Z-Jerk: ", currentZJerk);
-			SmartDashboard.putNumber("X-Jerk", currentXJerk);
-			SmartDashboard.putNumber("Y-Jerk", currentYJerk);
-			
-			if(Math.abs(currentZJerk) > 250){
-				swerve.hasBumped = true;
-			}
-			if(Math.abs(currentXJerk) > 100){
-				swerve.collidedPositiveX = true;
-			}
-			
-			SmartDashboard.putBoolean("Has Hit", swerve.hasBumped);
-
-			if(Math.abs(currentXJerk) > Math.abs(xJerkMax)){
-				xJerkMax = currentXJerk;
-			}
-			if(Math.abs(currentYJerk) > Math.abs(yJerkMax)){
-				yJerkMax = currentYJerk;
-			}
-			if(Math.abs(currentZJerk) > Math.abs(zJerkMax)){
-				zJerkMax = currentZJerk;
-			}
 			/*
 			if(Math.abs(swerve.ahrs.getWorldLinearAccelX()) > Math.abs(xAccelMax)){
 				xAccelMax = swerve.ahrs.getWorldLinearAccelX();
@@ -463,10 +441,6 @@ public class Robot extends TimedRobot {
 				zAccelMax = swerve.ahrs.getWorldLinearAccelZ();
 			}*/
 			
-
-			SmartDashboard.putNumber("X-Jerk Max: ", Math.abs(xJerkMax));
-			SmartDashboard.putNumber("Y-Jerk Max: ", Math.abs(yJerkMax));
-			SmartDashboard.putNumber("Z-Jerk Max: ", Math.abs(zJerkMax));
 			/*
 			SmartDashboard.putNumber("X-Accel Max: ", Math.abs(xAccelMax));
 			SmartDashboard.putNumber("Y-Accel Max: ", Math.abs(yAccelMax));
