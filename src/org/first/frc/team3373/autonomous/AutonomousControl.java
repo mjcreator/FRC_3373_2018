@@ -49,7 +49,7 @@ public class AutonomousControl {
 		auto_4_0 = new Auto_4_0(swerve, lifter, grabber, this.isSwitchLeft(), this.isScaleLeft());
 		auto_4_1 = new Auto_4_1(swerve, lifter, grabber);
 		auto_4_2 = new Auto_4_2(swerve, lifter, grabber);
-		auto_5_0 = new Auto_5_0(swerve, lifter, grabber, this.isScaleLeft());
+		auto_5_0 = new Auto_5_0(swerve, lifter, grabber, this.isSwitchLeft(), this.isScaleLeft());
 		auto_5_1 = new Auto_5_1(swerve, lifter, grabber);
 
 	}
@@ -57,8 +57,8 @@ public class AutonomousControl {
 	public void activateAuto() {
 		swerve.setAutonomousOffset(90);
 		swerve.activateAutoOffset();
-		auto_1_0.run();
-/*
+	//	auto_1_0.run();
+
 		switch (positionalID) {
 		case 0:
 			driveStraight.run();
@@ -224,7 +224,7 @@ public class AutonomousControl {
 
 			break;
 		}
-*/
+
 	}
 
 	public boolean isSwitchLeft() {

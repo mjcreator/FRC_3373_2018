@@ -50,9 +50,10 @@ public class DualActuators {
 		double deltaPosition2 = target -actuator2.getPosition(); // Distance of Actuator 2 to target Position
 		//double deltaPositions = deltaPosition1 - deltaPosition2; // The Difference between the distance from each Target
 		double deltaPositions = actuator1.getPosition() - actuator2.getPosition();
-		SmartDashboard.putNumber("DeltaPositions", deltaPositions); 
+		//SmartDashboard.putNumber("DeltaPositions", deltaPositions); 
 		double speed1 = proportional*deltaPosition1 + .005*integralCounter*deltaPosition1; // sets the speed to be proportional to the Distance form target
 		double speed2 = deltaPosition2*proportional + .005*integralCounter*deltaPosition2; // As it approaches target, it decelerates
+		SmartDashboard.putNumber("integral Count", integralCounter);
 		if(speed1 <0){ // actuator going down --> going up on lift
 			direction = -1;
 		}
@@ -60,15 +61,14 @@ public class DualActuators {
 			direction = 1;		
 		}
 		if(direction ==-1){
-			if(Math.abs(deltaPosition1) <3 && Math.abs(deltaPosition2) <3 && !isToPosition){//if it is within 2 cm of target begin integral accumulation
-				if(integralCounter < 1500) //maximum integral accumulation of 500
+			if(((Math.abs(deltaPosition1) <3 && Math.abs(deltaPosition2) <3) || (this.getPosition() > 21.5 && this.getPosition() < 24.5)) && !isToPosition){				if(integralCounter < 1500) //maximum integral accumulation of 500
 					integralCounter++;
 			}
 			else{
 				integralCounter = 0;
 			}
 		}else{
-			if(Math.abs(deltaPosition1) <2 && Math.abs(deltaPosition2) <2 && !isToPosition){//if it is within 2 cm of target begin integral accumulation
+			if(((Math.abs(deltaPosition1) <2 && Math.abs(deltaPosition2) <2)) && !isToPosition){//if it is within 2 cm of target begin integral accumulation
 				if(integralCounter < 1500) //maximum integral accumulation of 500
 					integralCounter++;
 			}

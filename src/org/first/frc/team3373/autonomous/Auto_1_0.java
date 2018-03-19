@@ -21,10 +21,12 @@ public class Auto_1_0 {
 	boolean isAtDistance2;
 	boolean placedOnScale;
 	boolean hasSpun1;
+	boolean gotCube;
 	int driveTimer = 0;
 	int exportTimer1 = 0;
 	int exportTimer2 = 0;
 	int shakeCounter = 0;
+	int cubeTimer = 0;
 	double height;
 
 	public Auto_1_0(SwerveControl swerveDrive, DualActuators actuators, Grabber cubeGrabber, boolean isSwitchLeft,
@@ -36,10 +38,11 @@ public class Auto_1_0 {
 		scaleLeft = isScaleLeft;
 		toDistance1R = false;
 		toRotate1R = false;
+		gotCube = true;
 		height = 27.5;
 	}
 
-	// Reenable lifter!
+
 	public void run() {
 		shakeCounter++;
 		swerve.setAutonomousBoolean(false);
@@ -72,7 +75,7 @@ public class Auto_1_0 {
 			}
 
 		}
-		//lifter.goToPosition(height);
+		lifter.goToPosition(height);
 	}
 
 	public void placeScale() {
@@ -80,38 +83,55 @@ public class Auto_1_0 {
 			swerve.driveXInchesFromSurface(245, 90, 3);
 			if (swerve.isToDistanceFromWall()) {
 				isAtDistance1 = true;
+				swerve.resetIsToDistance();
 			}
 
 		} else if (!isAtDistance2) {
-			swerve.driveXInchesFromSurface(70, 90, 1);
-			height = 2;
+			swerve.driveXInchesFromSurface(60, 90, 1);
+			lifter.resetIsToPosition();
 			if (swerve.isToDistanceFromWall()) {
 				isAtDistance2 = true;
+				height = 2;
 			}
-		/*} else if (!hasRisen) {
+		} else if (!hasRisen) {
+			swerve.calculateSwerveControl(0, 0, 0);
 			height = 2;
-			if (lifter.isToPosition()) {
+			if(lifter.isToPosition()) {
 				hasRisen = true;
-			}*/
-		/*} else if (exportTimer1 < 50) {
+			}
+		} else if (exportTimer1 < 50) {
+			swerve.calculateSwerveControl(0, 0, 0);
 			exportTimer1++;
 			grabber.exportCube();
+			lifter.resetIsToPosition();
+			if(exportTimer1 == 49){
+				height = 27.5;
+			}
 		} else if (!hasLowered) {
 			height = 27.5;
 			if (lifter.isToPosition()) {
 				hasLowered = true;
-			}*/
+			}
 		} else if (!hasSpun1) {
 			swerve.setSpinAngle(270);
 			swerve.spinToXdegrees();
 			if (swerve.isAtSpinAngle()) {
 				hasSpun1 = true;
 			}
-		}else if(!grabber.hasCube()){
+		}else if(!grabber.hasCube() && cubeTimer < 200){
 		swerve.setDriveDistance(75);
 		swerve.autonomousDrive(270, 270, .5, .5, 2);
+		cubeTimer ++;
+		if(cubeTimer == 200){
+			gotCube = false;
+		}
 		}else{
+			if(gotCube){
 			placedOnScale = true;
+			}else{
+				swerve.calculateSwerveControl(0, 0, 0);
+				grabber.idle();
+			}
 		}
 	}
 

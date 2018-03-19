@@ -567,7 +567,7 @@ public class SwerveControl {
 		//	}
 		}
 		
-		this.calculateSwerveControl(0, 0, (Math.sqrt(Math.sqrt(Math.abs(angleError)))+1)*.15*directionMod*optimalDirection);
+		this.calculateSwerveControl(0, 0, (Math.sqrt(Math.sqrt(Math.abs(angleError)))+1)*.175*directionMod*optimalDirection);
 	//	System.out.println("Spinning.");
 		SmartDashboard.putNumber("Anglelelele Error: ", angleError);
 		if(Math.abs(angleError) < 4 && spinAngleCounter > 20){ //If the angle is within 4 degrees of the target
@@ -588,9 +588,9 @@ public class SwerveControl {
 	public void autonomousDrive(double driveAngle, double faceAngle){
 		isFieldCentric = true;
 		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
-		SmartDashboard.putNumber("face Angle", faceAngle);
-		SmartDashboard.putNumber("Angle Error", angleError);
-		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
+		//SmartDashboard.putNumber("face Angle", faceAngle);
+		//SmartDashboard.putNumber("Angle Error", angleError);
+		//SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
 	
 		double angleError= (faceAngle - Math.abs((360 - ahrs.getYaw())%360));
 		double optimalDirection = 1;
@@ -618,9 +618,9 @@ public class SwerveControl {
 		isFieldCentric = true;
 		int directionMod = 1;
 		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
-		SmartDashboard.putNumber("face Angle", faceAngle);
-		SmartDashboard.putNumber("Angle Error", angleError);
-		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
+		//SmartDashboard.putNumber("face Angle", faceAngle);
+		//SmartDashboard.putNumber("Angle Error", angleError);
+		//SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
 	
 		double angleError= (faceAngle - Math.abs((360 - ahrs.getYaw())%360));
 		double optimalDirection = 1;
@@ -639,9 +639,9 @@ public class SwerveControl {
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
 	//	System.out.println((driveAngle));
-		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
-		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
-		SmartDashboard.putNumber("Angleeel error: ", angleError);
+		//SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
+		//SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
+		//SmartDashboard.putNumber("Angleeel error: ", angleError);
 		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 	}
 	
@@ -649,10 +649,10 @@ public class SwerveControl {
 		isFieldCentric = true;
 		int directionMod = 1;
 		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
-		SmartDashboard.putNumber("face Angle", faceAngle);
-		SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichUltrasonic));
-		SmartDashboard.putNumber("Angle Error", angleError);
-		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
+		//SmartDashboard.putNumber("face Angle", faceAngle);
+		//SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichUltrasonic));
+		//SmartDashboard.putNumber("Angle Error", angleError);
+		//SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
 	
 		double angleError= (faceAngle - Math.abs((360 - ahrs.getYaw())%360));
 		double optimalDirection = 1;
@@ -690,10 +690,10 @@ public class SwerveControl {
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
 //		System.out.println((driveAngle));
-		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
-		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
-		SmartDashboard.putNumber("Angleeel error: ", angleError);
-		SmartDashboard.putNumber("Distanceeeeec error: ", distanceError);
+		//SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
+		//SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
+		//SmartDashboard.putNumber("Angleeel error: ", angleError);
+		//SmartDashboard.putNumber("Distanceeeeec error: ", distanceError);
 		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 	}
 	public void autonomousDriveCrossingOver(double driveAngle, double faceAngle, double XspeedMod, double YspeedMod, int whichUltrasonic){
@@ -704,10 +704,10 @@ public class SwerveControl {
 		isFieldCentric = true;
 		int directionMod = 1;
 		faceAngle = (faceAngle + 360 -autonomousOffset)%360;
-		SmartDashboard.putNumber("face Angle", faceAngle);
-		SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichUltrasonic));
-		SmartDashboard.putNumber("Angle Error", angleError);
-		SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
+		//SmartDashboard.putNumber("face Angle", faceAngle);
+		//SmartDashboard.putNumber("Distance", ultraSonicSensors.getDistance(whichUltrasonic));
+		//SmartDashboard.putNumber("Angle Error", angleError);
+		//SmartDashboard.putNumber("Angle", (360 - ahrs.getYaw())%360);
 	
 		double angleError= (faceAngle - Math.abs((360 - ahrs.getYaw())%360));
 		double optimalDirection = 1;
@@ -745,10 +745,10 @@ public class SwerveControl {
 		double leftYComponent = Math.cos(Math.toRadians((driveAngle)%360));//*YspeedMod;
 		//SmartDashboard.putNumber("Distance Error", distanceError);
 //		System.out.println((driveAngle));
-		SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
-		SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
-		SmartDashboard.putNumber("Angleeel error: ", angleError);
-		SmartDashboard.putNumber("Distanceeeeec error: ", distanceError);
+		//SmartDashboard.putNumber("leftX: ", leftXComponent*XspeedMod);
+		//SmartDashboard.putNumber("leftY: ", leftYComponent*YspeedMod);
+		//SmartDashboard.putNumber("Angleeel error: ", angleError);
+		//SmartDashboard.putNumber("Distanceeeeec error: ", distanceError);
 		calculateSwerveControl(leftXComponent*XspeedMod,leftYComponent*YspeedMod, Math.sqrt(Math.sqrt(Math.abs(angleError)))*.1*directionMod*optimalDirection);
 		previousDistanceReading = currentDistanceReading;
 		
@@ -777,7 +777,7 @@ public class SwerveControl {
 		if(motorPower < -1){
 			motorPower=-1;
 		}
-		if(Math.abs(deltaDistance) > 75){
+		if(Math.abs(deltaDistance) > 150){
 			turbo();
 		}else{
 			normalSpeed();
@@ -788,7 +788,7 @@ public class SwerveControl {
 			else
 				this.autonomousDrive(faceAngle+90,faceAngle, motorPower, motorPower);
 		}else if(whichUltrasonic ==2){
-			if(direction <0)
+			if(direction >0)
 				this.autonomousDrive(faceAngle+90,faceAngle, motorPower, motorPower);
 			else
 				this.autonomousDrive(faceAngle +270,faceAngle, motorPower, motorPower);
@@ -817,7 +817,7 @@ public class SwerveControl {
 		if(motorPower < -1){
 			motorPower=-1;
 		}
-		if(Math.abs(deltaDistance) > 75){
+		if(Math.abs(deltaDistance) > 150){
 			turbo();
 		}else{
 			normalSpeed();
@@ -825,38 +825,38 @@ public class SwerveControl {
 		if(!crossingCubes){
 		if(directionalUltrasonic == 1){
 			if(direction >0)
-				this.autonomousDrive(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(faceAngle+270,faceAngle, motorPower, motorPower, wallUltrasonic);
 			else
-				this.autonomousDrive(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(faceAngle+90,faceAngle, motorPower, motorPower, wallUltrasonic);
 		}else if(directionalUltrasonic ==2){
-			if(direction <0)
-				this.autonomousDrive(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+			if(direction >0)
+				this.autonomousDrive(faceAngle+90,faceAngle, motorPower, motorPower, wallUltrasonic);
 			else
-				this.autonomousDrive(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(faceAngle+270,faceAngle, motorPower, motorPower, wallUltrasonic);
 		}
 		else{
 			if(direction >0)
-				this.autonomousDrive(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(faceAngle,faceAngle, motorPower, motorPower, wallUltrasonic);
 			else
-				this.autonomousDrive(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+				this.autonomousDrive(faceAngle+180,faceAngle, motorPower, motorPower, wallUltrasonic);
 		}
 		}else{
 			if(directionalUltrasonic == 1){
 				if(direction >0)
-					this.autonomousDriveCrossingOver(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(faceAngle+270,faceAngle, motorPower, motorPower, wallUltrasonic);
 				else
-					this.autonomousDriveCrossingOver(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(faceAngle+90,faceAngle, motorPower, motorPower, wallUltrasonic);
 			}else if(directionalUltrasonic ==2){
 				if(direction <0)
-					this.autonomousDriveCrossingOver(90,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(faceAngle+90,faceAngle, motorPower, motorPower, wallUltrasonic);
 				else
-					this.autonomousDriveCrossingOver(270,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(faceAngle+270,faceAngle, motorPower, motorPower, wallUltrasonic);
 			}
 			else{
 				if(direction >0)
-					this.autonomousDriveCrossingOver(0,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(faceAngle,faceAngle, motorPower, motorPower, wallUltrasonic);
 				else
-					this.autonomousDriveCrossingOver(180,faceAngle, motorPower, motorPower, wallUltrasonic);
+					this.autonomousDriveCrossingOver(faceAngle+180,faceAngle, motorPower, motorPower, wallUltrasonic);
 			}
 		}
 		SmartDashboard.putNumber("Pos Counter: ", isToPositionCounter);

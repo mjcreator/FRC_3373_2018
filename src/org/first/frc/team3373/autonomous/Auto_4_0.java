@@ -15,6 +15,8 @@ public class Auto_4_0 {
 	Grabber grabber;
 	boolean switchLeft;
 	boolean scaleLeft;
+	boolean tapeNotSeen;
+	boolean toDistance1;
 	boolean emergencyDrive = false;
 	int shakeCounter = 0;
 	int placeTimer = 0;
@@ -36,6 +38,7 @@ public class Auto_4_0 {
 		}
 		
 		public void run(){
+			lifter.setProportional(.075);
 			swerve.setAutonomousBoolean(false);
 			shakeCounter ++;
 			if(shakeCounter < 40){
@@ -56,10 +59,13 @@ public class Auto_4_0 {
 				try{
 				if((object.X+.3>0) && !toLeftTape){
 					swerve.autonomousDrive(165,90);
-					height = 8;
+					height = 18;
 				}
-				else if(((object.X < 0)|| toLeftTape)&&!linedUpWithTape){
+				else if(((object.X < 0)|| toLeftTape)&&!linedUpWithTape &&!tapeNotSeen){
 					toLeftTape = true;
+					if(swerve.ultraSonicSensors.getDistance(1) < 50){
+						tapeNotSeen = true;
+					}
 					double error = object.X * .5;
 					if(Math.abs(error) < .3){
 						error *= 1.5;
@@ -83,6 +89,11 @@ public class Auto_4_0 {
 					}
 					swerve.resetBump();
 					swerve.resetPositiveX();
+				}else if(tapeNotSeen && !toDistance1){
+					swerve.driveXInchesFromSurface(70, 90, 1);
+					if(swerve.isToDistanceFromWall()){
+						toDistance1 = true;
+					}
 				}
 				else{
 					this.driveToSwitch();
@@ -133,14 +144,21 @@ public class Auto_4_0 {
 		}
 		public void driveToSwitch(){
 			placeTimer ++;
+			height = 18;
 			if(!swerve.hasCollidedPositiveX() && !swerve.hasHitBump() && placeTimer < 200){
+				if(tapeNotSeen){
+					swerve.setDriveDistance(60);
+					swerve.autonomousDrive(90, 90,1,1,1);
+				}
+				else{
 				swerve.autonomousDrive(90, 90);
+				}
 				//System.out.println("Moving to Switch.");
 			}
 			else{
 				swerve.calculateSwerveControl(0, 0, 0);
 		//		System.out.println("Arrived.");
-				if(!emergencyDrive || toLeftTape){
+				if(!emergencyDrive || toLeftTape || toDistance1){
 				grabber.exportCube();
 				}else{
 					System.out.println("Emergency. Right tape.");

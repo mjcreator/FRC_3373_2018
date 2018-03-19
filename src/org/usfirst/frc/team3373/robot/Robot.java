@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
 	//double robotWidth = 20.75; //TODO change robot dimensions to match this years robot
 	//double robotLength = 26.8125;
 
-
+/*
 	int LBdriveChannel = 1;
 	int LBrotateID = 2;
 	int LBencOffset = 420; // Zero values (value when wheel is turned to default
@@ -81,8 +81,8 @@ public class Robot extends TimedRobot {
 	int RFEncMin = 11;
 	int RFEncMax = 895;
 	double RFWheelMod = .8922;
+	*/
 	
-	/*
 	int LBdriveChannel = 2;
 	int LBrotateID = 1;
 	int LBencOffset = 590; // Zero values (value when wheel is turned to default
@@ -111,26 +111,26 @@ public class Robot extends TimedRobot {
 	int RFEncMin = 10;
 	int RFEncMax = 889;
 	double RFWheelMod = 1;
-	*/
-/*	int leftUltraSonicPort =2;
+	
+	int leftUltraSonicPort =2;
 	int rightUltraSonicPort = 1;
-	int backUltraSonicPort = 0; Timber
-	*/
+	int backUltraSonicPort = 0; //Timber
+	
 	//lexi
-	int leftUltraSonicPort =1;
+	/*int leftUltraSonicPort =1;
 	int rightUltraSonicPort = 0;
 	int backUltraSonicPort = 2;
-	
+	*/
 	//Dual Linear Actuator Configs
 	//Look at Actuator.calibrate to view documentaion about how to calculate individual Actuators
 	static int actuator1Port1 = 9; //left
 	static int actuator1Port2 = 10;//right
 	static int actuator2Port1 = 11;
 	static int actuator2Port2 = 12;
-	static double minPot1 = 97;
-	static double minPot2 = 94;
-	static double maxPot1 = 752;
-	static double maxPot2 = 754;
+	static double minPot1 = 76;
+	static double minPot2 = 143;
+	static double maxPot1 = 731;
+	static double maxPot2 = 802;
 	static double minDistance1 = 2;
 	static double minDistance2 = 2;
 	static double maxDistance1 = 27.5;
@@ -290,6 +290,7 @@ public class Robot extends TimedRobot {
 	public void autonomousPeriodic() {
 		//swerve.autonomousDrive(0, 90, 1, 1, 3);
 		swerve.setAutonomousBoolean(true);
+		SmartDashboard.putNumber("Back Ultraboi!", swerve.ultraSonicSensors.getDistance(3));
 		//swerve.driveForwardXInchesFromSurface(50, 90);
 		//SmartDashboard.putNumber("Angle", swerve.ahrs.getYaw());
 		//swerve.driveForwardXInchesFromSurface(100, 97);
@@ -303,7 +304,8 @@ public class Robot extends TimedRobot {
 		//SmartDashboard.putNumber("Voltage3", swerve.rightSonic.getVoltage());
 		//SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
 		*/
-		
+		SmartDashboard.putNumber("Back Ultraboi!", swerve.ultraSonicSensors.getDistance(3));
+
 		swerve.LBWheel.rotateMotor.setSelectedSensorPosition(swerve.LBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.RBWheel.rotateMotor.setSelectedSensorPosition(swerve.RBWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.LFWheel.rotateMotor.setSelectedSensorPosition(swerve.LFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
@@ -358,120 +360,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		int index = 1;// for testing purposes
-		if (programOnes.get()) {
-			index += 1;
-		}
-		if (programTwos.get()) {
-			index += 2;
-		}
-		if (programFours.get()) {
-			index += 4;
-		}
-		if (index == 8) {
-			index = 0;
-		}
-		positionalIndex = 0;
-		if (positionalOnes.get()) {
-			positionalIndex += 1;
-		}
-		if (positionalTwos.get()) {
-			positionalIndex += 2;
-		}
-		if (positionalFours.get()) {
-			positionalIndex += 4;
-		}
-		if (positionalIndex == 8) {
-			positionalIndex = 0;
-		}
-		
-		
-		programIndex = 0;
-		if (programOnes.get()) {
-			programIndex += 1;
-		}
-		if (programTwos.get()) {
-			programIndex += 2;
-		}
-		if (programFours.get()) {
-			programIndex += 4;
-		}
-		if (programIndex == 8) {
-			programIndex = 0;
-		}
-		//swerve.calculateSwerveControl(driver.getRawAxis(LY), driver.getRawAxis(LX), driver.getRawAxis(RX));
-		SmartDashboard.putNumber("Index1", positionalIndex);
-		SmartDashboard.putNumber("Index2", programIndex);
-		SmartDashboard.putNumber("Back Ultraboi!", swerve.ultraSonicSensors.getDistance(3));
-		this.activateControl();
-		switch (index) {
-		case 0:
-			//SmartDashboard.putNumber("Distance", swerve.backSonic.getDistance());
-		//	swerve.isFieldCentric = true;
-			/*SmartDashboard.putBoolean("Hast Collidedx+", swerve.hasCollidedPositiveX());
-			SmartDashboard.putBoolean("Hast Collidedy+", swerve.hasCollidedPositiveY());
-			SmartDashboard.putBoolean("Hast Collidedx-", swerve.hasCollidedNegativeX());
-			SmartDashboard.putBoolean("Hast Collidedy-", swerve.hasCollidedNegativeY());
-			SmartDashboard.putBoolean("Hast Bump", swerve.hasHitBump());*/
-			if(driver.isYHeld()){
-				swerve.resetBump();
-				zJerkMax = 0;
-			}
-			if(driver.isAHeld()){
-				swerve.resetBump();
-				swerve.resetNegativeX();
-				swerve.resetNegativeY();
-				swerve.resetPositiveX();
-				swerve.resetPositiveY();
-				zJerkMax = 0;
-				xJerkMax = 0;
-				yJerkMax = 0;
-				swerve.collidedPositiveX = false;
-			}
-			
-			
-			/*
-			if(Math.abs(swerve.ahrs.getWorldLinearAccelX()) > Math.abs(xAccelMax)){
-				xAccelMax = swerve.ahrs.getWorldLinearAccelX();
-			}
-			if(Math.abs(swerve.ahrs.getWorldLinearAccelY()) > Math.abs(yAccelMax)){
-				yAccelMax = swerve.ahrs.getWorldLinearAccelY();
-			}
-			if(Math.abs(swerve.ahrs.getWorldLinearAccelZ()) > Math.abs(zAccelMax)){
-				zAccelMax = swerve.ahrs.getWorldLinearAccelZ();
-			}*/
-			
-			/*
-			SmartDashboard.putNumber("X-Accel Max: ", Math.abs(xAccelMax));
-			SmartDashboard.putNumber("Y-Accel Max: ", Math.abs(yAccelMax));
-			SmartDashboard.putNumber("Z-Accel Max: ", Math.abs(zAccelMax));
-			SmartDashboard.putNumber("Angle", (360 - swerve.ahrs.getYaw())%360);
-*/
-	//		activateControl();
-			
-			break;
-		case 1:
-			
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			break;
-		}
-		lifter.calibrate(shooter, true);
-		//calibrateSwerve();
+	//	lifter.calibrate(shooter, false);
+		lifter.calibrate(shooter, false);
 		//lifter.calibrate(shooter, false);
-	//	grabber.exportCube();
-		
-		
+		SmartDashboard.putNumber("Actuator Position", lifter.getPosition());
+		//lifter.calibrate(shooter, false);
 		/*actuators.calibrate(shooter, false);
 		actuators.calibrate(shooter, true); */
 		
@@ -538,6 +431,8 @@ public class Robot extends TimedRobot {
 		swerve.RFWheel.rotateMotor.setSelectedSensorPosition(swerve.RFWheel.rotateMotor.getSensorCollection().getAnalogInRaw(), 0, 0);
 		swerve.setPID();
 		climbBar.controlDropBar();
+		
+		SmartDashboard.putNumber("Back Ultraboi!", swerve.ultraSonicSensors.getDistance(3));
 		
 		positionalIndex = 7;
 		

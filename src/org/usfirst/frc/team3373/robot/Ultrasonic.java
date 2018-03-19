@@ -33,7 +33,7 @@ public class Ultrasonic {
 				stabilityCounter = 0;// if another inaccurate measurement comes in, reduce stability counter back to 0
 			}
 		}
-		if(stabilityCounter > 2 && inaccurate){// if the signal has been stable for 
+		if(stabilityCounter > 20 && inaccurate){// if the signal has been stable for 
 			inaccurate = false;
 			stabilityCounter = 0;
 		}
